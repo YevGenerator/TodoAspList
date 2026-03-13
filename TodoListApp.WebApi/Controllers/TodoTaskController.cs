@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Interfaces;
 using TodoListApp.Models;
+using TodoListApp.Models.Enums;
 using TodoListApp.WebApi.Models;
 
 namespace TodoListApp.WebApi.Controllers;
@@ -112,6 +113,39 @@ public class TodoTaskController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         await this.taskService.DeleteTaskAsync(id);
+        return this.NoContent();
+    }
+
+    [HttpGet("assigned")]
+    public async Task<ActionResult<IEnumerable<TodoTaskModel>>> GetAssignedTasks(
+        [FromQuery] string assignee,
+        [FromQuery] TodoTaskStatus? status,
+        [FromQuery] string? sortBy)
+    {
+        if (string.IsNullOrWhiteSpace(assignee))
+        {
+            return this.BadRequest("Assignee parameter is required.");
+        }
+
+        var tasks = await this.taskService.GetAssignedTasksAsync(assignee, status, sortBy);
+        var models = tasks.Select(t => new TodoTaskModel
+        {
+            Id = t.Id,
+            Title = t.Title,
+            Description = t.Description,
+            DueDate = t.DueDate,
+            Status = t.Status,
+            Assignee = t.Assignee,
+            TodoListId = t.TodoListId,
+        });
+
+        return this.Ok(models);
+    }
+
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> ChangeStatus(int id, [FromBody] TodoTaskStatus newStatus)
+    {
+        await this.taskService.ChangeTaskStatusAsync(id, newStatus);
         return this.NoContent();
     }
 }
