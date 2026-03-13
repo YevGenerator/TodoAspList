@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TodoListApp.Data.Entities;
 
 namespace TodoListApp.Data;
 
@@ -15,4 +16,6 @@ public class TodoListDbContext : DbContext
         : base(options)
     {
     }
+
+    public DbSet<TodoListEntity> TodoLists { get; set; } = null!;
 }
