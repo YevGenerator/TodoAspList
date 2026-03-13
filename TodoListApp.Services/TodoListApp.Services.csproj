@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\TodoListApp.Interfaces\TodoListApp.Interfaces.csproj" />
+    <ProjectReference Include="..\TodoListApp.Data\TodoListApp.Data.csproj" />
+    <ProjectReference Include="..\TodoListApp.Models\TodoListApp.Models.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

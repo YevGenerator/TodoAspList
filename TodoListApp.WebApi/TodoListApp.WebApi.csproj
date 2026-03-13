@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TodoListApp.Interfaces\TodoListApp.Interfaces.csproj" />
+    <ProjectReference Include="..\TodoListApp.Models\TodoListApp.Models.csproj" />
+    <ProjectReference Include="..\TodoListApp.Services\TodoListApp.Services.csproj" />
+    <ProjectReference Include="..\TodoListApp.Data\TodoListApp.Data.csproj" />
+  </ItemGroup>
+
+</Project>
