@@ -7,4 +7,6 @@ public class TodoListEntity
     public string Title { get; set; } = string.Empty;
 
     public string? Description { get; set; }
+
+    public ICollection<TodoTaskEntity> Tasks { get; set; } = new List<TodoTaskEntity>();
 }

@@ -13,6 +13,7 @@ builder.Services.AddDbContext<TodoListDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("TodoListDbConnection")));
 
 builder.Services.AddScoped<ITodoListDatabaseService, TodoListDatabaseService>();
+builder.Services.AddScoped<ITodoTaskDatabaseService, TodoTaskDatabaseService>();
 
 var app = builder.Build();
 
