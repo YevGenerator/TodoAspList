@@ -1,0 +1,62 @@
+@model IEnumerable<TodoListApp.WebApp.Models.TodoTaskModel>
+
+@{
+    ViewData["Title"] = "Tasks";
+    var todoListId = ViewBag.TodoListId;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Tasks</h2>
+    <div>
+        <a asp-action="Create" asp-route-todoListId="@todoListId" class="btn btn-primary me-2">Add New Task</a>
+        <a asp-controller="TodoList" asp-action="Index" class="btn btn-secondary">Back to Lists</a>
+    </div>
+</div>
+
+<table class="table table-hover table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th>Assignee</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="5" class="text-center">No tasks found for this list.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                // US10: Перевірка на прострочене завдання
+                bool isOverdue = item.DueDate.HasValue
+                && item.DueDate.Value.Date < DateTime.Today
+                && item.Status != TodoListApp.Models.Enums.TodoTaskStatus.Completed;
+
+                <tr class="@(isOverdue ? "table-danger" : "")">
+                    <td class="align-middle fw-bold">
+                        @if (isOverdue)
+                        {
+                            <span class="badge bg-danger me-1">Overdue</span>
+                        }
+                        @item.Title
+                    </td>
+                    <td class="align-middle">@item.Status</td>
+                    <td class="align-middle">@(item.DueDate.HasValue? item.DueDate.Value.ToShortDateString() : "-")</td>
+                    <td class="align-middle">@(string.IsNullOrEmpty(item.Assignee) ? "Unassigned" : item.Assignee)</td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

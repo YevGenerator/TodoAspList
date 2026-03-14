@@ -9,6 +9,11 @@ builder.Services.AddHttpClient<ITodoListWebApiService, TodoListWebApiService>(cl
     client.BaseAddress = new Uri("https://localhost:7055");
 });
 
+builder.Services.AddHttpClient<ITodoTaskWebApiService, TodoTaskWebApiService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7055");
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
