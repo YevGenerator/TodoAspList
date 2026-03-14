@@ -16,6 +16,7 @@ builder.Services.AddScoped<ITodoListDatabaseService, TodoListDatabaseService>();
 builder.Services.AddScoped<ITodoTaskDatabaseService, TodoTaskDatabaseService>();
 builder.Services.AddScoped<ISearchDatabaseService, SearchDatabaseService>();
 builder.Services.AddScoped<ITodoTagDatabaseService, TodoTagDatabaseService>();
+builder.Services.AddScoped<ITodoTaskCommentDatabaseService, TodoTaskCommentDatabaseService>();
 
 var app = builder.Build();
 

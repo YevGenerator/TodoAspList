@@ -22,4 +22,6 @@ public class TodoListDbContext : DbContext
     public DbSet<TodoTaskEntity> TodoTasks { get; set; } = null!;
 
     public DbSet<TodoTagEntity> TodoTags { get; set; } = null!;
+
+    public DbSet<TodoTaskCommentEntity> TodoTaskComments { get; set; } = null!;
 }

@@ -23,4 +23,6 @@ public class TodoTaskEntity
     public TodoListEntity? TodoList { get; set; }
 
     public ICollection<TodoTagEntity> Tags { get; set; } = new List<TodoTagEntity>();
+
+    public ICollection<TodoTaskCommentEntity> Comments { get; set; } = new List<TodoTaskCommentEntity>();
 }
