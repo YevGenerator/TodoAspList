@@ -21,4 +21,6 @@ public class TodoTaskEntity
     public int TodoListId { get; set; }
 
     public TodoListEntity? TodoList { get; set; }
+
+    public ICollection<TodoTagEntity> Tags { get; set; } = new List<TodoTagEntity>();
 }
