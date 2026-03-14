@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Models;
+using TodoListApp.Models.Enums;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services;
 
@@ -164,5 +165,39 @@ public class TodoTaskController : Controller
     {
         await this.taskService.DeleteTaskAsync(id);
         return this.RedirectToAction(nameof(this.Index), new { todoListId = todoListId });
+    }
+
+    public async Task<IActionResult> Assigned(string assignee, TodoTaskStatus? status, string? sortBy)
+    {
+        this.ViewBag.Assignee = assignee;
+        this.ViewBag.CurrentStatus = status;
+        this.ViewBag.CurrentSort = sortBy;
+
+        if (string.IsNullOrWhiteSpace(assignee))
+        {
+            return this.View(Enumerable.Empty<TodoTaskModel>());
+        }
+
+        var tasks = await this.taskService.GetAssignedTasksAsync(assignee, status, sortBy);
+        var models = tasks.Select(t => new TodoTaskModel
+        {
+            Id = t.Id,
+            Title = t.Title,
+            Description = t.Description,
+            DueDate = t.DueDate,
+            Status = t.Status,
+            Assignee = t.Assignee,
+            TodoListId = t.TodoListId,
+        });
+
+        return this.View(models);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangeStatus(int id, TodoTaskStatus newStatus, string assignee, TodoTaskStatus? currentStatus, string? currentSort)
+    {
+        await this.taskService.ChangeTaskStatusAsync(id, newStatus);
+        return this.RedirectToAction(nameof(this.Assigned), new { assignee = assignee, status = currentStatus, sortBy = currentSort });
     }
 }

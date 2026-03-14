@@ -1,4 +1,5 @@
 using TodoListApp.Models;
+using TodoListApp.Models.Enums;
 using TodoListApp.WebApp.Models;
 
 namespace TodoListApp.WebApp.Services;
@@ -90,5 +91,42 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
     public async Task DeleteTaskAsync(int id)
     {
         _ = await this.httpClient.DeleteAsync(new Uri($"api/todotask/{id}", UriKind.Relative));
+    }
+
+    public async Task<IEnumerable<TodoTask>> GetAssignedTasksAsync(string assignee, TodoTaskStatus? status = null, string? sortBy = null)
+    {
+        var url = $"api/todotask/assigned?assignee={Uri.EscapeDataString(assignee)}";
+        if (status.HasValue)
+        {
+            url += $"&status={status.Value}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(sortBy))
+        {
+            url += $"&sortBy={Uri.EscapeDataString(sortBy)}";
+        }
+
+        var response = await this.httpClient.GetFromJsonAsync<IEnumerable<TodoTaskWebApiModel>>(url);
+        if (response == null)
+        {
+            return Array.Empty<TodoTask>();
+        }
+
+        return response.Select(m => new TodoTask
+        {
+            Id = m.Id,
+            Title = m.Title,
+            Description = m.Description,
+            DueDate = m.DueDate,
+            Status = m.Status,
+            Assignee = m.Assignee,
+            TodoListId = m.TodoListId,
+        });
+    }
+
+    public async Task ChangeTaskStatusAsync(int id, TodoTaskStatus newStatus)
+    {
+        var response = await this.httpClient.PutAsJsonAsync($"api/todotask/{id}/status", newStatus);
+        _ = response.EnsureSuccessStatusCode();
     }
 }

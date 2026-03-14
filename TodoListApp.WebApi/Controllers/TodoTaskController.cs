@@ -142,7 +142,7 @@ public class TodoTaskController : ControllerBase
         return this.Ok(models);
     }
 
-    [HttpPatch("{id}/status")]
+    [HttpPut("{id}/status")]
     public async Task<IActionResult> ChangeStatus(int id, [FromBody] TodoTaskStatus newStatus)
     {
         await this.taskService.ChangeTaskStatusAsync(id, newStatus);
