@@ -1,0 +1,53 @@
+@model TodoListApp.WebApp.Models.SearchResultModel
+
+@{
+    ViewData["Title"] = "Search Results";
+}
+
+<h2>Search Results for "@Model.SearchQuery"</h2>
+<hr />
+
+@if (string.IsNullOrWhiteSpace(Model.SearchQuery))
+{
+    <div class="alert alert-info">Please enter a search term in the search bar above.</div>
+}
+else if (!Model.TodoLists.Any() && !Model.TodoTasks.Any())
+{
+    <div class="alert alert-warning">No results found for "@Model.SearchQuery".</div>
+}
+else
+{
+    @if (Model.TodoLists.Any())
+    {
+        <h4 class="mt-4">Matched To-Do Lists</h4>
+        <div class="list-group mb-4">
+            @foreach (var list in Model.TodoLists)
+            {
+                <a asp-controller="TodoTask" asp-action="Index" asp-route-todoListId="@list.Id" class="list-group-item list-group-item-action">
+                    <h5 class="mb-1">@list.Title</h5>
+                    <p class="mb-1 text-muted">@list.Description</p>
+                </a>
+            }
+        </div>
+    }
+
+    @if (Model.TodoTasks.Any())
+    {
+        <h4 class="mt-4">Matched Tasks</h4>
+        <div class="list-group">
+            @foreach (var task in Model.TodoTasks)
+            {
+                <a asp-controller="TodoTask" asp-action="Details" asp-route-id="@task.Id" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">@task.Title</h5>
+                        <small>
+                            <span class="badge bg-secondary">@task.Status</span>
+                        </small>
+                    </div>
+                    <p class="mb-1 text-muted">@task.Description</p>
+                    <small>Assignee: @(string.IsNullOrEmpty(task.Assignee) ? "Unassigned" : task.Assignee)</small>
+                </a>
+            }
+        </div>
+    }
+}

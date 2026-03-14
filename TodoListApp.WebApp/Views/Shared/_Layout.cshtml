@@ -32,6 +32,10 @@
                             <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="TodoTask" asp-action="Assigned">Assigned Tasks</a>
                         </li>
                     </ul>
+                    <form class="d-flex" asp-controller="Search" asp-action="Index" method="get">
+                        <input class="form-control me-2" type="search" placeholder="Search tasks & lists..." aria-label="Search" name="query" required>
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
                 </div>
             </div>
         </nav>

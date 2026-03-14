@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Data;
 using TodoListApp.Interfaces;
@@ -22,16 +21,16 @@ public class SearchDatabaseService : ISearchDatabaseService
             return new SearchResult();
         }
 
-        var term = searchTerm.ToLower(CultureInfo.CurrentCulture);
+        var pattern = $"%{searchTerm}%";
 
         var lists = await this.dbContext.TodoLists
-            .Where(l => l.Title.Contains(term, StringComparison.CurrentCultureIgnoreCase) ||
-                       (l.Description != null && l.Description.Contains(term, StringComparison.CurrentCultureIgnoreCase)))
+            .Where(l => EF.Functions.Like(l.Title, pattern) ||
+                       (l.Description != null && EF.Functions.Like(l.Description, pattern)))
             .ToListAsync();
 
         var tasks = await this.dbContext.TodoTasks
-            .Where(t => t.Title.Contains(term, StringComparison.CurrentCultureIgnoreCase) ||
-                       (t.Description != null && t.Description.Contains(term, StringComparison.CurrentCultureIgnoreCase)))
+            .Where(t => EF.Functions.Like(t.Title, pattern) ||
+                       (t.Description != null && EF.Functions.Like(t.Description, pattern)))
             .ToListAsync();
 
         var searchResult = new SearchResult
