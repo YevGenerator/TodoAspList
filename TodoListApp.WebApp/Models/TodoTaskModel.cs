@@ -25,4 +25,6 @@ public class TodoTaskModel
     public int TodoListId { get; set; }
 
     public List<TodoTagModel> Tags { get; set; } = new List<TodoTagModel>();
+
+    public List<TodoTaskCommentModel> Comments { get; set; } = new List<TodoTaskCommentModel>();
 }

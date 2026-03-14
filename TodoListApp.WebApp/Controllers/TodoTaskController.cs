@@ -10,11 +10,16 @@ public class TodoTaskController : Controller
 {
     private readonly ITodoTaskWebApiService taskService;
     private readonly ITodoTagWebApiService tagService;
+    private readonly ITodoTaskCommentWebApiService commentService;
 
-    public TodoTaskController(ITodoTaskWebApiService taskService, ITodoTagWebApiService tagService)
+    public TodoTaskController(
+        ITodoTaskWebApiService taskService,
+        ITodoTagWebApiService tagService,
+        ITodoTaskCommentWebApiService commentService)
     {
         this.taskService = taskService;
         this.tagService = tagService;
+        this.commentService = commentService;
     }
 
     public async Task<IActionResult> Index(int todoListId)
@@ -44,6 +49,8 @@ public class TodoTaskController : Controller
             return this.NotFound();
         }
 
+        var comments = await this.commentService.GetCommentsByTaskIdAsync(id);
+
         var model = new TodoTaskModel
         {
             Id = task.Id,
@@ -54,6 +61,14 @@ public class TodoTaskController : Controller
             Assignee = task.Assignee,
             TodoListId = task.TodoListId,
             Tags = task.Tags.Select(t => new TodoTagModel { Id = t.Id, Name = t.Name }).ToList(),
+            Comments = comments.Select(c => new TodoTaskCommentModel
+            {
+                Id = c.Id,
+                Text = c.Text,
+                CreatedAt = c.CreatedAt,
+                CreatedBy = c.CreatedBy,
+                TodoTaskId = c.TodoTaskId,
+            }).ToList(),
         };
 
         var allTags = await this.tagService.GetAllTagsAsync();

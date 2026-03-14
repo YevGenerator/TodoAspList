@@ -75,3 +75,52 @@
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">Edit Task</a>
     <a asp-action="Index" asp-route-todoListId="@Model.TodoListId" class="btn btn-secondary">Back to Tasks</a>
 </div>
+
+<hr class="mt-5" />
+<div class="row">
+    <div class="col-md-8">
+        <h4>Comments</h4>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <form asp-controller="TodoTaskComment" asp-action="Create" method="post">
+                    <input type="hidden" name="TodoTaskId" value="@Model.Id" />
+                    <div class="form-group mb-2">
+                        <textarea name="Text" class="form-control" rows="2" placeholder="Write a comment..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary">Post Comment</button>
+                </form>
+            </div>
+        </div>
+
+        @if (!Model.Comments.Any())
+        {
+            <p class="text-muted">No comments yet.</p>
+        }
+        else
+        {
+            <div class="list-group">
+                @foreach (var comment in Model.Comments)
+                {
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-bold">@comment.CreatedBy</h6>
+                            <small class="text-muted">@comment.CreatedAt.ToLocalTime().ToString("g")</small>
+                        </div>
+                        <p class="mb-1 mt-2">@comment.Text</p>
+
+                        <div class="mt-2 text-end">
+                            <form asp-controller="TodoTaskComment" asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Delete this comment?');">
+                                <input type="hidden" name="id" value="@comment.Id" />
+                                <input type="hidden" name="taskId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-sm btn-link text-danger p-0 border-0">Delete</button>
+                            </form>
+                            <span class="text-muted mx-1">|</span>
+                            <a asp-controller="TodoTaskComment" asp-action="Edit" asp-route-id="@comment.Id" class="btn btn-sm btn-link text-warning p-0 border-0">Edit</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
