@@ -19,6 +19,11 @@ builder.Services.AddHttpClient<ISearchWebApiService, SearchWebApiService>(client
     client.BaseAddress = new Uri("https://localhost:7055");
 });
 
+builder.Services.AddHttpClient<ITodoTagWebApiService, TodoTagWebApiService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7055");
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

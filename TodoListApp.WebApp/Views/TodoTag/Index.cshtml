@@ -1,0 +1,72 @@
+@model TodoListApp.WebApp.Models.TodoTagModel
+
+@{
+    ViewData["Title"] = "Manage Tags";
+    var tags = ViewBag.Tags as IEnumerable<TodoListApp.WebApp.Models.TodoTagModel> ?? Enumerable.Empty<TodoListApp.WebApp.Models.TodoTagModel>();
+}
+
+<h2>Manage Tags</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Create New Tag</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Name" class="form-label fw-bold"></label>
+                        <input asp-for="Name" class="form-control" placeholder="e.g. Urgent, Work, Home" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Add Tag</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <table class="table table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tag Name</th>
+                    <th class="text-end" style="width: 100px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!tags.Any())
+                {
+                    <tr>
+                        <td colspan="2" class="text-center">No tags created yet.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var tag in tags)
+                    {
+                        <tr>
+                            <td class="align-middle">
+                                <span class="badge bg-info text-dark">@tag.Name</span>
+                            </td>
+                            <td class="text-end">
+                                <form asp-action="Delete" method="post" onsubmit="return confirm('Are you sure you want to delete this tag?');">
+                                    <input type="hidden" name="id" value="@tag.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

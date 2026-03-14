@@ -38,7 +38,10 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
 
     public async Task<TodoTask?> GetTaskByIdAsync(int id)
     {
-        var entity = await this.dbContext.TodoTasks.FindAsync(id);
+        var entity = await this.dbContext.TodoTasks
+            .Include(t => t.Tags)
+            .FirstOrDefaultAsync(t => t.Id == id);
+
         if (entity == null)
         {
             return null;
@@ -54,6 +57,7 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             Status = entity.Status,
             Assignee = entity.Assignee,
             TodoListId = entity.TodoListId,
+            Tags = entity.Tags.Select(tg => new TodoTag { Id = tg.Id, Name = tg.Name }).ToList(),
         };
     }
 

@@ -9,10 +9,12 @@ namespace TodoListApp.WebApp.Controllers;
 public class TodoTaskController : Controller
 {
     private readonly ITodoTaskWebApiService taskService;
+    private readonly ITodoTagWebApiService tagService;
 
-    public TodoTaskController(ITodoTaskWebApiService taskService)
+    public TodoTaskController(ITodoTaskWebApiService taskService, ITodoTagWebApiService tagService)
     {
         this.taskService = taskService;
+        this.tagService = tagService;
     }
 
     public async Task<IActionResult> Index(int todoListId)
@@ -37,7 +39,10 @@ public class TodoTaskController : Controller
     public async Task<IActionResult> Details(int id)
     {
         var task = await this.taskService.GetTaskByIdAsync(id);
-        if (task == null) return this.NotFound();
+        if (task == null)
+        {
+            return this.NotFound();
+        }
 
         var model = new TodoTaskModel
         {
@@ -48,7 +53,14 @@ public class TodoTaskController : Controller
             Status = task.Status,
             Assignee = task.Assignee,
             TodoListId = task.TodoListId,
+            Tags = task.Tags.Select(t => new TodoTagModel { Id = t.Id, Name = t.Name }).ToList(),
         };
+
+        var allTags = await this.tagService.GetAllTagsAsync();
+        this.ViewBag.AvailableTags = allTags
+            .Where(t => !task.Tags.Any(tt => tt.Id == t.Id))
+            .Select(t => new TodoTagModel { Id = t.Id, Name = t.Name })
+            .ToList();
 
         return this.View(model);
     }
@@ -199,5 +211,21 @@ public class TodoTaskController : Controller
     {
         await this.taskService.ChangeTaskStatusAsync(id, newStatus);
         return this.RedirectToAction(nameof(this.Assigned), new { assignee = assignee, status = currentStatus, sortBy = currentSort });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AssignTag(int taskId, int tagId)
+    {
+        await this.tagService.AssignTagToTaskAsync(taskId, tagId);
+        return this.RedirectToAction(nameof(this.Details), new { id = taskId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveTag(int taskId, int tagId)
+    {
+        await this.tagService.RemoveTagFromTaskAsync(taskId, tagId);
+        return this.RedirectToAction(nameof(this.Details), new { id = taskId });
     }
 }

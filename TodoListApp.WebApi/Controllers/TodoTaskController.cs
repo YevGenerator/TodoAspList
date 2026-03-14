@@ -53,10 +53,12 @@ public class TodoTaskController : ControllerBase
             Status = task.Status,
             Assignee = task.Assignee,
             TodoListId = task.TodoListId,
+            Tags = task.Tags.Select(t => new TodoTagModel { Id = t.Id, Name = t.Name }).ToList(),
         };
 
         return this.Ok(model);
     }
+
 
     [HttpPost]
     public async Task<ActionResult<TodoTaskModel>> Post([FromBody] TodoTaskModel model)

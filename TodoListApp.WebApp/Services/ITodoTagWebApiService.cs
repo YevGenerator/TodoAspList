@@ -1,0 +1,16 @@
+using TodoListApp.Models;
+
+namespace TodoListApp.WebApp.Services;
+
+public interface ITodoTagWebApiService
+{
+    Task<IEnumerable<TodoTag>> GetAllTagsAsync();
+
+    Task CreateTagAsync(TodoTag tag);
+
+    Task DeleteTagAsync(int id);
+
+    Task AssignTagToTaskAsync(int taskId, int tagId);
+
+    Task RemoveTagFromTaskAsync(int taskId, int tagId);
+}

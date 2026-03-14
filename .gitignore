@@ -360,3 +360,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/TodoListApp.WebApi/todolist.db-wal
+/TodoListApp.WebApi/todolist.db-shm
+/TodoListApp.WebApi/todolist.db

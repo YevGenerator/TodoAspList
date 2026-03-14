@@ -22,4 +22,6 @@ public class TodoTaskModel
 
     [Required]
     public int TodoListId { get; set; }
+
+    public List<TodoTagModel> Tags { get; set; } = new List<TodoTagModel>();
 }

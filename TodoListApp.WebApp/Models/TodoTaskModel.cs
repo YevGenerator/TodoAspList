@@ -23,4 +23,6 @@ public class TodoTaskModel
     public string? Assignee { get; set; }
 
     public int TodoListId { get; set; }
+
+    public List<TodoTagModel> Tags { get; set; } = new List<TodoTagModel>();
 }

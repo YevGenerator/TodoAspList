@@ -19,4 +19,6 @@ public class TodoTask
     public string? Assignee { get; set; }
 
     public int TodoListId { get; set; }
+
+    public List<TodoTag> Tags { get; set; } = new List<TodoTag>();
 }

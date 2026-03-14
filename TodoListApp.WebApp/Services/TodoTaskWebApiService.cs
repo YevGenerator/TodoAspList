@@ -50,6 +50,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             Status = response.Status,
             Assignee = response.Assignee,
             TodoListId = response.TodoListId,
+            Tags = response.Tags?.Select(t => new TodoTag { Id = t.Id, Name = t.Name }).ToList() ?? new List<TodoTag>(),
         };
     }
 

@@ -17,4 +17,6 @@ public class TodoTaskWebApiModel
     public string? Assignee { get; set; }
 
     public int TodoListId { get; set; }
+
+    public List<TodoTagWebApiModel> Tags { get; set; } = new List<TodoTagWebApiModel>();
 }
