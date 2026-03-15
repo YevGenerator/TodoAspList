@@ -15,30 +15,36 @@ public class TodoListDatabaseService : ITodoListDatabaseService
         this.dbContext = dbContext;
     }
 
-    public async Task<IEnumerable<TodoList>> GetTodoListsAsync()
+    public async Task<IEnumerable<TodoList>> GetTodoListsAsync(string userId)
     {
-        var entities = await this.dbContext.TodoLists.ToListAsync();
+        var entities = await this.dbContext.TodoLists
+            .Where(l => l.OwnerId == userId)
+            .ToListAsync();
+
         return entities.Select(e => new TodoList
         {
             Id = e.Id,
             Title = e.Title,
             Description = e.Description,
+            OwnerId = e.OwnerId,
         });
     }
 
     public async Task<TodoList> AddTodoListAsync(TodoList todoList)
     {
         ArgumentNullException.ThrowIfNull(todoList);
+
         var entity = new TodoListEntity
         {
             Title = todoList.Title,
             Description = todoList.Description,
+            OwnerId = todoList.OwnerId,
         };
 
         _ = await this.dbContext.TodoLists.AddAsync(entity);
         _ = await this.dbContext.SaveChangesAsync();
 
-        todoList!.Id = entity.Id;
+        todoList.Id = entity.Id;
         return todoList;
     }
 

@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Interfaces;
 using TodoListApp.Models;
@@ -5,6 +7,7 @@ using TodoListApp.WebApi.Models;
 
 namespace TodoListApp.WebApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TodoListController : ControllerBase
@@ -19,7 +22,13 @@ public class TodoListController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TodoListModel>>> Get()
     {
-        var lists = await this.todoListService.GetTodoListsAsync();
+        var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return this.Unauthorized();
+        }
+
+        var lists = await this.todoListService.GetTodoListsAsync(userId);
         var models = lists.Select(l => new TodoListModel
         {
             Id = l.Id,
@@ -33,15 +42,23 @@ public class TodoListController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TodoListModel>> Post([FromBody] TodoListModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
         if (!this.ModelState.IsValid)
         {
             return this.BadRequest(this.ModelState);
+        }
+
+        var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return this.Unauthorized();
         }
 
         var todoList = new TodoList
         {
             Title = model.Title,
             Description = model.Description,
+            OwnerId = userId,
         };
 
         var createdList = await this.todoListService.AddTodoListAsync(todoList);
@@ -53,6 +70,8 @@ public class TodoListController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, [FromBody] TodoListModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
+
         if (id != model.Id || !this.ModelState.IsValid)
         {
             return this.BadRequest();

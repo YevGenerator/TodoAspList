@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Models;
 using TodoListApp.WebApp.Models;
@@ -5,6 +6,7 @@ using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Controllers;
 
+[Authorize]
 public class TodoTaskCommentController : Controller
 {
     private readonly ITodoTaskCommentWebApiService commentService;

@@ -38,12 +38,6 @@
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-4">
-                <label asp-for="Assignee" class="form-label fw-bold"></label>
-                <input asp-for="Assignee" class="form-control" placeholder="Enter assignee name" />
-                <span asp-validation-for="Assignee" class="text-danger"></span>
-            </div>
-
             <div class="form-group">
                 <button type="submit" class="btn btn-primary me-2">Create</button>
                 <a asp-action="Index" asp-route-todoListId="@Model.TodoListId" class="btn btn-secondary">Back to Tasks</a>

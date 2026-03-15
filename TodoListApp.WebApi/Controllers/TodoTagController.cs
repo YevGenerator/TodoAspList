@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Interfaces;
 using TodoListApp.Models;
@@ -5,6 +6,7 @@ using TodoListApp.WebApi.Models;
 
 namespace TodoListApp.WebApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TodoTagController : ControllerBase

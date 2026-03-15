@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Interfaces;
 using TodoListApp.Models;
@@ -6,6 +7,7 @@ using TodoListApp.WebApi.Models;
 
 namespace TodoListApp.WebApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TodoTaskController : ControllerBase
@@ -59,7 +61,6 @@ public class TodoTaskController : ControllerBase
         return this.Ok(model);
     }
 
-
     [HttpPost]
     public async Task<ActionResult<TodoTaskModel>> Post([FromBody] TodoTaskModel model)
     {
@@ -70,18 +71,21 @@ public class TodoTaskController : ControllerBase
             return this.BadRequest(this.ModelState);
         }
 
+        var userName = this.User.Identity?.Name ?? "Unknown";
+
         var task = new TodoTask
         {
             Title = model.Title,
             Description = model.Description,
             DueDate = model.DueDate,
             Status = model.Status,
-            Assignee = model.Assignee,
+            Assignee = userName,
             TodoListId = model.TodoListId,
         };
 
         var createdTask = await this.taskService.AddTaskAsync(task);
         model.Id = createdTask.Id;
+        model.Assignee = createdTask.Assignee;
 
         return this.CreatedAtAction(nameof(this.Get), new { id = model.Id }, model);
     }

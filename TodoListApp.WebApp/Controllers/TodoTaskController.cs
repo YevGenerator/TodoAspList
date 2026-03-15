@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Models;
 using TodoListApp.Models.Enums;
@@ -6,6 +7,7 @@ using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Controllers;
 
+[Authorize]
 public class TodoTaskController : Controller
 {
     private readonly ITodoTaskWebApiService taskService;

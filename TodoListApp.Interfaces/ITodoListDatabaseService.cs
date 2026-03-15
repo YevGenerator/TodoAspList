@@ -4,7 +4,7 @@ namespace TodoListApp.Interfaces;
 
 public interface ITodoListDatabaseService
 {
-    Task<IEnumerable<TodoList>> GetTodoListsAsync();
+    Task<IEnumerable<TodoList>> GetTodoListsAsync(string userId);
 
     Task<TodoList> AddTodoListAsync(TodoList todoList);
 

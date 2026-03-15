@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Interfaces;
 using TodoListApp.Models;
@@ -5,6 +6,7 @@ using TodoListApp.WebApi.Models;
 
 namespace TodoListApp.WebApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TodoTaskCommentController : ControllerBase
@@ -62,16 +64,19 @@ public class TodoTaskCommentController : ControllerBase
             return this.BadRequest(this.ModelState);
         }
 
+        var userName = this.User.Identity?.Name ?? "Unknown";
+
         var comment = new TodoTaskComment
         {
             Text = model.Text,
-            CreatedBy = model.CreatedBy,
+            CreatedBy = userName,
             TodoTaskId = model.TodoTaskId,
         };
 
         var createdComment = await this.commentService.AddCommentAsync(comment);
         model.Id = createdComment.Id;
         model.CreatedAt = createdComment.CreatedAt;
+        model.CreatedBy = createdComment.CreatedBy;
 
         return this.CreatedAtAction(nameof(this.Get), new { id = model.Id }, model);
     }
