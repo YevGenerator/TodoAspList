@@ -111,33 +111,34 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
         }
     }
 
-    public async Task<IEnumerable<TodoTask>> GetAssignedTasksAsync(string assignee, TodoTaskStatus? status = null, string? sortBy = null)
+    public async Task<IEnumerable<TodoTask>> GetAssignedTasksAsync(string? assignee, TodoTaskStatus? status = null, string? sortBy = null, IEnumerable<string>? requiredTags = null, IEnumerable<string>? excludedTags = null)
     {
-        ArgumentNullException.ThrowIfNull(assignee);
+        var query = this.dbContext.TodoTasks.Include(t => t.Tags).AsQueryable();
 
-        var query = this.dbContext.TodoTasks.Where(t => t.Assignee == assignee);
+        if (!string.IsNullOrWhiteSpace(assignee))
+        {
+            query = query.Where(t => t.Assignee == assignee);
+        }
 
         if (status.HasValue)
         {
             query = query.Where(t => t.Status == status.Value);
         }
-        else
+
+        if (requiredTags != null)
         {
-            query = query.Where(t => t.Status == TodoTaskStatus.NotStarted || t.Status == TodoTaskStatus.InProgress);
+            foreach (var rTag in requiredTags)
+            {
+                query = query.Where(t => t.Tags.Any(tg => EF.Functions.Like(tg.Name, rTag)));
+            }
         }
 
-        if (!string.IsNullOrWhiteSpace(sortBy))
+        if (excludedTags != null)
         {
-            query = sortBy.ToLower(CultureInfo.CurrentCulture) switch
+            foreach (var eTag in excludedTags)
             {
-                "title" => query.OrderBy(t => t.Title),
-                "duedate" => query.OrderBy(t => t.DueDate),
-                _ => query.OrderBy(t => t.CreatedDate),
-            };
-        }
-        else
-        {
-            query = query.OrderBy(t => t.CreatedDate);
+                query = query.Where(t => !t.Tags.Any(tg => EF.Functions.Like(tg.Name, eTag)));
+            }
         }
 
         var entities = await query.ToListAsync();
@@ -147,11 +148,11 @@ public class TodoTaskDatabaseService : ITodoTaskDatabaseService
             Id = e.Id,
             Title = e.Title,
             Description = e.Description,
-            CreatedDate = e.CreatedDate,
             DueDate = e.DueDate,
             Status = e.Status,
             Assignee = e.Assignee,
             TodoListId = e.TodoListId,
+            Tags = e.Tags.Select(tg => new TodoTag { Id = tg.Id, Name = tg.Name }).ToList(),
         });
     }
 

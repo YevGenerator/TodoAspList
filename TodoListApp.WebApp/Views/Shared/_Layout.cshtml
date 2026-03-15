@@ -14,44 +14,46 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-4">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TodoListApp.WebApp</a>
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">📋 To-Do App</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="TodoList" asp-action="Index">My To-Do Lists</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="TodoTask" asp-action="Assigned">Assigned Tasks</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="TodoTag" asp-action="Index">Tags</a>
-                        </li>
-                    </ul>
-                    <form class="d-flex" asp-controller="Search" asp-action="Index" method="get">
-                        <input class="form-control me-2" type="search" placeholder="Search tasks & lists..." aria-label="Search" name="query" required>
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
-                    <ul class="navbar-nav ms-auto">
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <span class="nav-link text-dark">Hello, <b>@User.Identity?.Name</b>!</span>
+                                <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="TodoList" asp-action="Index">My Lists</a>
                             </li>
                             <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
-                                    <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                                <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="TodoTask" asp-action="Assigned">Assigned Tasks</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark fw-bold" asp-area="" asp-controller="TodoTag" asp-action="Index">Tags</a>
+                            </li>
+                        }
+                    </ul>
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <form class="d-flex me-4" asp-controller="Search" asp-action="Index" method="get">
+                            <input class="form-control form-control-sm me-1" type="search" placeholder="Search..." aria-label="Search" name="query" required>
+                            <button class="btn btn-sm btn-outline-success" type="submit">Search</button>
+                        </form>
+                    }
+
+                    <ul class="navbar-nav align-items-center">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item me-3">
+                                <span class="badge bg-light text-dark border">@User.Identity?.Name</span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
                                 </form>
                             </li>
                         }
@@ -60,8 +62,8 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                            <li class="nav-item ms-2">
+                                <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Login">Login</a>
                             </li>
                         }
                     </ul>

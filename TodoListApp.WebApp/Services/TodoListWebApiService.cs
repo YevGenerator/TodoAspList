@@ -25,6 +25,15 @@ public class TodoListWebApiService : ITodoListWebApiService
             Id = m.Id,
             Title = m.Title,
             Description = m.Description,
+            Tasks = m.Tasks?.Select(t => new TodoTask
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Status = t.Status,
+                DueDate = t.DueDate,
+                TodoListId = t.TodoListId,
+                Tags = t.Tags?.Select(tg => new TodoTag { Id = tg.Id, Name = tg.Name }).ToList() ?? new List<TodoTag>(),
+            }).ToList() ?? new List<TodoTask>(),
         });
     }
 

@@ -1,0 +1,64 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('TagNames') || document.getElementById('tagSearch');
+        const suggestions = document.getElementById('tagSuggestions');
+        if (!input || !suggestions || !window.allTags) return;
+
+        let currentMatches = [];
+
+        function applySuggestion(currentWord, suggestionText, words, cursor) {
+            const prefix = currentWord.match(/^[\+\-\#]/) ? currentWord[0] : '';
+            words[words.length - 1] = prefix + suggestionText;
+            const newText = words.join(' ') + ' ';
+            input.value = newText + input.value.substring(cursor);
+            suggestions.style.display = 'none';
+            currentMatches = [];
+            input.focus();
+        }
+
+        input.addEventListener('input', function() {
+            const cursor = this.selectionStart;
+            const text = this.value.substring(0, cursor);
+            const words = text.split(' ');
+            const currentWord = words[words.length - 1];
+            const cleanWord = currentWord.replace(/^[\+\-\#]/, '').toLowerCase();
+
+            if (cleanWord.length > 0) {
+                currentMatches = window.allTags.filter(t => t.toLowerCase().startsWith(cleanWord));
+                if (currentMatches.length > 0) {
+                    suggestions.innerHTML = currentMatches.map(m => `<button type="button" class="list-group-item list-group-item-action py-1">${m}</button>`).join('');
+                    suggestions.style.display = 'block';
+
+                    [...suggestions.children].forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            applySuggestion(currentWord, this.innerText, words, cursor);
+                        });
+                    });
+                    return;
+                }
+            }
+            suggestions.style.display = 'none';
+            currentMatches = [];
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab' && suggestions.style.display === 'block' && currentMatches.length > 0) {
+                e.preventDefault();
+
+                const cursor = this.selectionStart;
+                const text = this.value.substring(0, cursor);
+                const words = text.split(' ');
+                const currentWord = words[words.length - 1];
+
+                applySuggestion(currentWord, currentMatches[0], words, cursor);
+            }
+        });
+
+        document.addEventListener('click', e => {
+            if (e.target !== input) {
+                suggestions.style.display = 'none';
+                currentMatches = [];
+            }
+        });
+    });
+</script>

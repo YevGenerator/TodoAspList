@@ -12,4 +12,6 @@ public class TodoListModel
 
     [MaxLength(500)]
     public string? Description { get; set; }
+
+    public List<TodoTaskModel> Tasks { get; set; } = new List<TodoTaskModel>();
 }

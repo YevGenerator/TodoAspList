@@ -123,17 +123,29 @@ public class TodoTaskController : ControllerBase
     }
 
     [HttpGet("assigned")]
-    public async Task<ActionResult<IEnumerable<TodoTaskModel>>> GetAssignedTasks(
-        [FromQuery] string assignee,
-        [FromQuery] TodoTaskStatus? status,
-        [FromQuery] string? sortBy)
+    public async Task<ActionResult<IEnumerable<TodoTaskModel>>> GetAssignedTasks([FromQuery] string? assignee, [FromQuery] TodoTaskStatus? status, [FromQuery] string? sortBy, [FromQuery] string? tagSearch)
     {
-        if (string.IsNullOrWhiteSpace(assignee))
+        var reqTags = new List<string>();
+        var excTags = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(tagSearch))
         {
-            return this.BadRequest("Assignee parameter is required.");
+            var terms = tagSearch.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var term in terms)
+            {
+                if (term.StartsWith('+') && term.Length > 1)
+                {
+                    reqTags.Add(term.Substring(1));
+                }
+                else if (term.StartsWith('-') && term.Length > 1)
+                {
+                    excTags.Add(term.Substring(1));
+                }
+            }
         }
 
-        var tasks = await this.taskService.GetAssignedTasksAsync(assignee, status, sortBy);
+        var tasks = await this.taskService.GetAssignedTasksAsync(assignee, status, sortBy, reqTags, excTags);
+
         var models = tasks.Select(t => new TodoTaskModel
         {
             Id = t.Id,
@@ -143,6 +155,7 @@ public class TodoTaskController : ControllerBase
             Status = t.Status,
             Assignee = t.Assignee,
             TodoListId = t.TodoListId,
+            Tags = t.Tags.Select(tg => new TodoTagModel { Id = tg.Id, Name = tg.Name }).ToList(),
         });
 
         return this.Ok(models);

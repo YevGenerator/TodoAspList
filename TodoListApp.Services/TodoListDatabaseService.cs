@@ -18,6 +18,8 @@ public class TodoListDatabaseService : ITodoListDatabaseService
     public async Task<IEnumerable<TodoList>> GetTodoListsAsync(string userId)
     {
         var entities = await this.dbContext.TodoLists
+            .Include(l => l.Tasks)
+                .ThenInclude(t => t.Tags)
             .Where(l => l.OwnerId == userId)
             .ToListAsync();
 
@@ -27,6 +29,15 @@ public class TodoListDatabaseService : ITodoListDatabaseService
             Title = e.Title,
             Description = e.Description,
             OwnerId = e.OwnerId,
+            Tasks = e.Tasks.Select(t => new TodoTask
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Status = t.Status,
+                DueDate = t.DueDate,
+                TodoListId = t.TodoListId,
+                Tags = t.Tags.Select(tg => new TodoTag { Id = tg.Id, Name = tg.Name }).ToList(),
+            }).ToList(),
         });
     }
 

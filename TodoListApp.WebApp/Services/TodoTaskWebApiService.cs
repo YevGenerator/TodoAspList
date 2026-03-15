@@ -54,23 +54,6 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         };
     }
 
-    public async Task CreateTaskAsync(TodoTask task)
-    {
-        ArgumentNullException.ThrowIfNull(task);
-
-        var model = new TodoTaskWebApiModel
-        {
-            Title = task.Title,
-            Description = task.Description,
-            DueDate = task.DueDate,
-            Status = task.Status,
-            Assignee = task.Assignee,
-            TodoListId = task.TodoListId,
-        };
-
-        _ = await this.httpClient.PostAsJsonAsync("api/todotask", model);
-    }
-
     public async Task UpdateTaskAsync(TodoTask task)
     {
         ArgumentNullException.ThrowIfNull(task);
@@ -94,17 +77,27 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
         _ = await this.httpClient.DeleteAsync(new Uri($"api/todotask/{id}", UriKind.Relative));
     }
 
-    public async Task<IEnumerable<TodoTask>> GetAssignedTasksAsync(string assignee, TodoTaskStatus? status = null, string? sortBy = null)
+    public async Task<IEnumerable<TodoTask>> GetAssignedTasksAsync(string? assignee, string? tagSearch, TodoTaskStatus? status = null, string? sortBy = null)
     {
-        var url = $"api/todotask/assigned?assignee={Uri.EscapeDataString(assignee)}";
+        var url = "api/todotask/assigned?";
+        if (!string.IsNullOrWhiteSpace(assignee))
+        {
+            url += $"assignee={Uri.EscapeDataString(assignee)}&";
+        }
+
+        if (!string.IsNullOrWhiteSpace(tagSearch))
+        {
+            url += $"tagSearch={Uri.EscapeDataString(tagSearch)}&";
+        }
+
         if (status.HasValue)
         {
-            url += $"&status={status.Value}";
+            url += $"status={status.Value}&";
         }
 
         if (!string.IsNullOrWhiteSpace(sortBy))
         {
-            url += $"&sortBy={Uri.EscapeDataString(sortBy)}";
+            url += $"sortBy={Uri.EscapeDataString(sortBy)}&";
         }
 
         var response = await this.httpClient.GetFromJsonAsync<IEnumerable<TodoTaskWebApiModel>>(url);
@@ -122,6 +115,7 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
             Status = m.Status,
             Assignee = m.Assignee,
             TodoListId = m.TodoListId,
+            Tags = m.Tags?.Select(t => new TodoTag { Id = t.Id, Name = t.Name }).ToList() ?? new List<TodoTag>(),
         });
     }
 
@@ -129,5 +123,26 @@ public class TodoTaskWebApiService : ITodoTaskWebApiService
     {
         var response = await this.httpClient.PutAsJsonAsync($"api/todotask/{id}/status", newStatus);
         _ = response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<int> CreateTaskAsync(TodoTask task)
+    {
+        ArgumentNullException.ThrowIfNull(task);
+
+        var model = new TodoTaskWebApiModel
+        {
+            Id = task.Id,
+            Title = task.Title,
+            Description = task.Description,
+            DueDate = task.DueDate,
+            Status = task.Status,
+            Assignee = task.Assignee,
+            TodoListId = task.TodoListId,
+            Tags = task.Tags?.Select(tg => new TodoTagWebApiModel { Id = tg.Id, Name = tg.Name }).ToList() ?? new List<TodoTagWebApiModel>(),
+        };
+        var response = await this.httpClient.PostAsJsonAsync("api/todotask", model);
+        _ = response.EnsureSuccessStatusCode();
+        var created = await response.Content.ReadFromJsonAsync<TodoTaskWebApiModel>();
+        return created?.Id ?? 0;
     }
 }

@@ -1,43 +1,83 @@
 @model IEnumerable<TodoListApp.WebApp.Models.TodoListModel>
+@using TodoListApp.Models.Enums
 
 @{
     ViewData["Title"] = "My To-Do Lists";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>My To-Do Lists</h2>
-    <a asp-action="Create" class="btn btn-primary">Create New List</a>
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold">My To-Do Lists</h2>
+    <a asp-action="Create" class="btn btn-primary shadow-sm">+ Create New List</a>
 </div>
 
-<table class="table table-hover table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th class="text-end">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (!Model.Any())
+@if (!Model.Any())
+{
+    <div class="alert alert-info shadow-sm">You haven't created any lists yet. Time to get organized!</div>
+}
+else
+{
+    <div class="accordion shadow-sm" id="todoListsAccordion">
+        @foreach (var list in Model)
         {
-            <tr>
-                <td colspan="3" class="text-center">You don't have any to-do lists yet.</td>
-            </tr>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-@list.Id">
+                    <button class="accordion-button collapsed fw-bold text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@list.Id" aria-expanded="false" aria-controls="collapse-@list.Id">
+                        📁 @list.Title
+                        <span class="badge bg-secondary ms-3 rounded-pill">@list.Tasks.Count tasks</span>
+                    </button>
+                </h2>
+                <div id="collapse-@list.Id" class="accordion-collapse collapse" aria-labelledby="heading-@list.Id" data-bs-parent="#todoListsAccordion">
+                    <div class="accordion-body bg-light">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted small">@list.Description</span>
+                            <div>
+                                <a asp-action="Edit" asp-route-id="@list.Id" class="btn btn-sm btn-outline-warning">Edit List</a>
+                                <a asp-action="Delete" asp-route-id="@list.Id" class="btn btn-sm btn-outline-danger">Delete List</a>
+                            </div>
+                        </div>
+
+                        <div class="list-group">
+                            @foreach (var task in list.Tasks.OrderBy(t => t.Status == TodoTaskStatus.Completed).ThenBy(t => t.DueDate))
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center @(task.Status == TodoTaskStatus.Completed ? "bg-light text-muted" : "")">
+                                    <div>
+                                        <a asp-controller="TodoTask" asp-action="Details" asp-route-id="@task.Id" class="text-decoration-none fw-bold @(task.Status == TodoTaskStatus.Completed ? "text-muted text-decoration-line-through" : "text-dark")">
+                                            @task.Title
+                                        </a>
+                                        @if (task.Tags.Any())
+                                        {
+                                            <span class="ms-2">
+                                                @foreach (var tag in task.Tags)
+                                                {
+                                                    <span class="badge bg-info text-dark" style="font-size: 0.7em;">#@tag.Name</span>
+                                                }
+                                            </span>
+                                        }
+                                        <div class="small mt-1 d-flex align-items-center gap-2">
+                                            <span class="text-muted">📅 @(task.DueDate?.ToShortDateString() ?? "No date")</span>
+                                            <span class="badge @(task.Status == TodoTaskStatus.Completed ? "bg-success" : (task.Status == TodoTaskStatus.InProgress ? "bg-warning text-dark" : "bg-secondary"))">@task.Status</span>
+
+                                            <form asp-controller="TodoTask" asp-action="ChangeStatus" method="post" class="m-0 ms-auto">
+                                                <input type="hidden" name="id" value="@task.Id" />
+                                                <input type="hidden" name="returnUrl" value="/TodoList" />
+                                                <select name="newStatus" class="form-select form-select-sm" style="width: 110px; font-size: 0.75rem; padding: 0.1rem 1.5rem 0.1rem 0.5rem;" onchange="this.form.submit()">
+                                                    <option value="">Change...</option>
+                                                    <option value="@TodoTaskStatus.NotStarted">Not Started</option>
+                                                    <option value="@TodoTaskStatus.InProgress">In Progress</option>
+                                                    <option value="@TodoTaskStatus.Completed">Completed</option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <a asp-controller="TodoTask" asp-action="Create" asp-route-todoListId="@list.Id" class="list-group-item list-group-item-action text-center text-primary fw-bold bg-white">
+                                + Add Task to this list
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
-        else
-        {
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td class="align-middle fw-bold">@item.Title</td>
-                    <td class="align-middle">@item.Description</td>
-                    <td class="text-end">
-                        <a asp-controller="TodoTask" asp-action="Index" asp-route-todoListId="@item.Id" class="btn btn-sm btn-outline-info">View Tasks</a>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
-                    </td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
+    </div>
+}

@@ -44,6 +44,20 @@
                 <span asp-validation-for="Assignee" class="text-danger"></span>
             </div>
 
+            <datalist id="availableTags">
+                @foreach (var tagName in ViewBag.AllTags as List<string> ?? new List<string>())
+                {
+                    <option value="@tagName"></option>
+                }
+            </datalist>
+
+            <div class="form-group mb-4 position-relative">
+                <label asp-for="TagNames" class="form-label fw-bold text-primary"></label>
+                <input asp-for="TagNames" id="TagNames" class="form-control" autocomplete="off" />
+                <div id="tagSuggestions" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display: none;"></div>
+                <span asp-validation-for="TagNames" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <button type="submit" class="btn btn-success me-2">Save</button>
                 <a asp-action="Index" asp-route-todoListId="@Model.TodoListId" class="btn btn-secondary">Back to Tasks</a>
@@ -53,7 +67,9 @@
 </div>
 
 @section Scripts {
+    <script>window.allTags = @Html.Raw(Json.Serialize(ViewBag.AllTags ?? new List<string>()));</script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_TagAutocomplete");
     }
 }

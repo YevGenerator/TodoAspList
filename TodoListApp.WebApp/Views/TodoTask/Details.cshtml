@@ -52,20 +52,16 @@
                     </div>
                 }
 
-                @if (availableTags.Any())
-                {
-                    <form asp-action="AssignTag" method="post" class="d-flex mt-3" style="max-width: 300px;">
-                        <input type="hidden" name="taskId" value="@Model.Id" />
-                        <select name="tagId" class="form-select form-select-sm me-2" required>
-                            <option value="">-- Select Tag to Add --</option>
-                            @foreach (var tag in availableTags)
-                            {
-                                <option value="@tag.Id">@tag.Name</option>
-                            }
-                        </select>
-                        <button type="submit" class="btn btn-sm btn-outline-primary">Add</button>
-                    </form>
-                }
+                <form asp-action="AddTagsOnTheFly" method="post" class="mt-3">
+                    <input type="hidden" name="taskId" value="@Model.Id" />
+                    <div class="position-relative" style="max-width: 300px;">
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="TagNames" name="tagNames" class="form-control" autocomplete="off" placeholder="Add tags..." />
+                            <button type="submit" class="btn btn-outline-primary">Add</button>
+                        </div>
+                        <div id="tagSuggestions" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display: none;"></div>
+                    </div>
+                </form>
             </dd>
         </dl>
     </div>
@@ -124,3 +120,10 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>window.allTags = @Html.Raw(Json.Serialize(ViewBag.AllTags ?? new List<string>()));</script>
+    @{
+        await Html.RenderPartialAsync("_TagAutocomplete");
+    }
+}

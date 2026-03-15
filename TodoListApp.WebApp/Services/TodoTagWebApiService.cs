@@ -27,12 +27,6 @@ public class TodoTagWebApiService : ITodoTagWebApiService
         });
     }
 
-    public async Task CreateTagAsync(TodoTag tag)
-    {
-        var model = new TodoTagWebApiModel { Name = tag.Name };
-        _ = await this.httpClient.PostAsJsonAsync("api/todotag", model);
-    }
-
     public async Task DeleteTagAsync(int id)
     {
         _ = await this.httpClient.DeleteAsync($"api/todotag/{id}");
@@ -46,5 +40,15 @@ public class TodoTagWebApiService : ITodoTagWebApiService
     public async Task RemoveTagFromTaskAsync(int taskId, int tagId)
     {
         _ = await this.httpClient.DeleteAsync($"api/todotag/task/{taskId}/tag/{tagId}");
+    }
+
+    public async Task<TodoTag> CreateTagAsync(TodoTag tag)
+    {
+        var model = new TodoTagWebApiModel { Name = tag.Name };
+        var response = await this.httpClient.PostAsJsonAsync("api/todotag", model);
+        response.EnsureSuccessStatusCode();
+        var created = await response.Content.ReadFromJsonAsync<TodoTagWebApiModel>();
+        tag.Id = created?.Id ?? 0; // Отримуємо ID нового тегу
+        return tag;
     }
 }

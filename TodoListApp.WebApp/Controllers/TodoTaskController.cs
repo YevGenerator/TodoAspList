@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Models;
@@ -63,28 +64,20 @@ public class TodoTaskController : Controller
             Assignee = task.Assignee,
             TodoListId = task.TodoListId,
             Tags = task.Tags.Select(t => new TodoTagModel { Id = t.Id, Name = t.Name }).ToList(),
-            Comments = comments.Select(c => new TodoTaskCommentModel
-            {
-                Id = c.Id,
-                Text = c.Text,
-                CreatedAt = c.CreatedAt,
-                CreatedBy = c.CreatedBy,
-                TodoTaskId = c.TodoTaskId,
-            }).ToList(),
+            Comments = comments.Select(c => new TodoTaskCommentModel { Id = c.Id, Text = c.Text, CreatedAt = c.CreatedAt, CreatedBy = c.CreatedBy, TodoTaskId = c.TodoTaskId }).ToList(),
         };
 
         var allTags = await this.tagService.GetAllTagsAsync();
-        this.ViewBag.AvailableTags = allTags
-            .Where(t => !task.Tags.Any(tt => tt.Id == t.Id))
-            .Select(t => new TodoTagModel { Id = t.Id, Name = t.Name })
-            .ToList();
+        this.ViewBag.AllTags = allTags.Select(t => t.Name).ToList();
 
         return this.View(model);
     }
 
-    public IActionResult Create(int todoListId)
+    public async Task<IActionResult> Create(int todoListId)
     {
         var model = new TodoTaskModel { TodoListId = todoListId };
+        var allTags = await this.tagService.GetAllTagsAsync();
+        this.ViewBag.AllTags = allTags.Select(t => t.Name).ToList();
         return this.View(model);
     }
 
@@ -106,7 +99,8 @@ public class TodoTaskController : Controller
                 TodoListId = model.TodoListId,
             };
 
-            await this.taskService.CreateTaskAsync(task);
+            int newTaskId = await this.taskService.CreateTaskAsync(task);
+            await this.ProcessTagsOnTheFlyAsync(newTaskId, model.TagNames);
             return this.RedirectToAction(nameof(this.Index), new { todoListId = model.TodoListId });
         }
 
@@ -130,7 +124,11 @@ public class TodoTaskController : Controller
             Status = task.Status,
             Assignee = task.Assignee,
             TodoListId = task.TodoListId,
+            TagNames = string.Join(", ", task.Tags.Select(t => t.Name)),
         };
+
+        var allTags = await this.tagService.GetAllTagsAsync();
+        this.ViewBag.AllTags = allTags.Select(t => t.Name).ToList();
 
         return this.View(model);
     }
@@ -160,6 +158,7 @@ public class TodoTaskController : Controller
             };
 
             await this.taskService.UpdateTaskAsync(task);
+            await this.ProcessTagsOnTheFlyAsync(task.Id, model.TagNames);
             return this.RedirectToAction(nameof(this.Index), new { todoListId = model.TodoListId });
         }
 
@@ -196,37 +195,57 @@ public class TodoTaskController : Controller
         return this.RedirectToAction(nameof(this.Index), new { todoListId = todoListId });
     }
 
-    public async Task<IActionResult> Assigned(string assignee, TodoTaskStatus? status, string? sortBy)
+    public async Task<IActionResult> Assigned(string? assignee, string? tagSearch, TodoTaskStatus? status, string? sortBy)
     {
-        this.ViewBag.Assignee = assignee;
+        if (assignee == null && tagSearch == null && status == null && sortBy == null)
+        {
+            assignee = this.User.Identity?.Name;
+        }
+
+        this.ViewBag.Assignee = assignee ?? string.Empty;
+        this.ViewBag.TagSearch = tagSearch ?? string.Empty;
         this.ViewBag.CurrentStatus = status;
         this.ViewBag.CurrentSort = sortBy;
 
-        if (string.IsNullOrWhiteSpace(assignee))
-        {
-            return this.View(Enumerable.Empty<TodoTaskModel>());
-        }
+        var tasks = await this.taskService.GetAssignedTasksAsync(assignee, tagSearch, status, sortBy);
 
-        var tasks = await this.taskService.GetAssignedTasksAsync(assignee, status, sortBy);
         var models = tasks.Select(t => new TodoTaskModel
         {
             Id = t.Id,
             Title = t.Title,
-            Description = t.Description,
             DueDate = t.DueDate,
             Status = t.Status,
             Assignee = t.Assignee,
             TodoListId = t.TodoListId,
+            Tags = t.Tags.Select(tg => new TodoTagModel { Id = tg.Id, Name = tg.Name }).ToList(),
         });
+
+        var allTags = await this.tagService.GetAllTagsAsync();
+        this.ViewBag.AllTags = allTags.Select(t => t.Name).ToList();
 
         return this.View(models);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ChangeStatus(int id, TodoTaskStatus newStatus, string assignee, TodoTaskStatus? currentStatus, string? currentSort)
+    public async Task<IActionResult> AddTagsOnTheFly(int taskId, string? tagNames)
+    {
+        await this.ProcessTagsOnTheFlyAsync(taskId, tagNames);
+        return this.RedirectToAction(nameof(this.Details), new { id = taskId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+
+    public async Task<IActionResult> ChangeStatus(int id, TodoTaskStatus newStatus, string assignee, TodoTaskStatus? currentStatus, string? currentSort, string? returnUrl = null)
     {
         await this.taskService.ChangeTaskStatusAsync(id, newStatus);
+
+        if (!string.IsNullOrEmpty(returnUrl) && this.Url.IsLocalUrl(returnUrl))
+        {
+            return this.Redirect(returnUrl);
+        }
+
         return this.RedirectToAction(nameof(this.Assigned), new { assignee = assignee, status = currentStatus, sortBy = currentSort });
     }
 
@@ -244,5 +263,43 @@ public class TodoTaskController : Controller
     {
         await this.tagService.RemoveTagFromTaskAsync(taskId, tagId);
         return this.RedirectToAction(nameof(this.Details), new { id = taskId });
+    }
+
+    private async Task ProcessTagsOnTheFlyAsync(int taskId, string? tagNamesString)
+    {
+        if (string.IsNullOrWhiteSpace(tagNamesString))
+        {
+            return;
+        }
+
+        var inputTags = tagNamesString.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                      .Select(t => t.Trim().TrimStart('#'))
+                                      .Distinct()
+                                      .ToList();
+
+        var allExistingTags = await this.tagService.GetAllTagsAsync();
+        var currentTask = await this.taskService.GetTaskByIdAsync(taskId);
+        var currentTaskTags = currentTask?.Tags ?? new List<TodoTag>();
+
+        foreach (var tagName in inputTags)
+        {
+            var existingTag = allExistingTags.FirstOrDefault(t => t.Name.Equals(tagName, StringComparison.OrdinalIgnoreCase));
+            int tagId;
+
+            if (existingTag == null)
+            {
+                var newTag = await this.tagService.CreateTagAsync(new TodoTag { Name = tagName });
+                tagId = newTag.Id;
+            }
+            else
+            {
+                tagId = existingTag.Id;
+            }
+
+            if (!currentTaskTags.Any(t => t.Id == tagId))
+            {
+                await this.tagService.AssignTagToTaskAsync(taskId, tagId);
+            }
+        }
     }
 }

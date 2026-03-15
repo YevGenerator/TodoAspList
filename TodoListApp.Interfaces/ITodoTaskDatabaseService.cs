@@ -15,7 +15,7 @@ public interface ITodoTaskDatabaseService
 
     Task DeleteTaskAsync(int id);
 
-    Task<IEnumerable<TodoTask>> GetAssignedTasksAsync(string assignee, TodoTaskStatus? status = null, string? sortBy = null);
+    Task<IEnumerable<TodoTask>> GetAssignedTasksAsync(string? assignee, TodoTaskStatus? status = null, string? sortBy = null, IEnumerable<string>? requiredTags = null, IEnumerable<string>? excludedTags = null);
 
     Task ChangeTaskStatusAsync(int id, TodoTaskStatus newStatus);
 }

@@ -24,6 +24,15 @@ public class TodoListController : Controller
             Id = l.Id,
             Title = l.Title,
             Description = l.Description,
+            Tasks = l.Tasks.Select(t => new TodoTaskModel
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Status = t.Status,
+                DueDate = t.DueDate,
+                TodoListId = t.TodoListId,
+                Tags = t.Tags.Select(tg => new TodoTagModel { Id = tg.Id, Name = tg.Name }).ToList(),
+            }).ToList(),
         });
 
         return this.View(models);

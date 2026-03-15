@@ -2,112 +2,94 @@
 @using TodoListApp.Models.Enums
 
 @{
-    ViewData["Title"] = "Assigned Tasks";
+    ViewData["Title"] = "Task Filter";
     string currentAssignee = ViewBag.Assignee as string ?? "";
+    string tagSearch = ViewBag.TagSearch as string ?? "";
     TodoTaskStatus? currentStatus = ViewBag.CurrentStatus as TodoTaskStatus?;
-    string currentSort = ViewBag.CurrentSort as string ?? "";
 }
 
-<h2>Assigned Tasks</h2>
-<hr />
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Task Explorer</h2>
+</div>
 
-<div class="card mb-4">
+<div class="card mb-4 shadow-sm border-0 bg-light">
     <div class="card-body">
         <form asp-action="Assigned" method="get" class="row g-3 align-items-end">
-            <div class="col-md-4">
-                <label for="assignee" class="form-label fw-bold">Assignee Name (Required)</label>
-                <input type="text" id="assignee" name="assignee" class="form-control" value="@currentAssignee" placeholder="e.g. John Doe" required />
+            <div class="col-md-3">
+                <label for="assignee" class="form-label fw-bold text-muted small">Assignee (leave empty for all)</label>
+                <input type="text" id="assignee" name="assignee" class="form-control form-control-sm" value="@currentAssignee" placeholder="e.g. user@mail.com" />
+            </div>
+            <div class="col-md-4 position-relative">
+                <label for="tagSearch" class="form-label fw-bold text-muted small">Tags (+must, -exclude)</label>
+                <input type="text" id="tagSearch" name="tagSearch" class="form-control form-control-sm" value="@tagSearch" placeholder="e.g. +urgent -work bug" autocomplete="off" />
+                <div id="tagSuggestions" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display: none; top: 100%;"></div>
             </div>
             <div class="col-md-3">
-                <label for="status" class="form-label fw-bold">Status Filter</label>
-                <select id="status" name="status" class="form-select">
-                    <option value="">Active (Not Started & In Progress)</option>
-                    @foreach (var status in Enum.GetValues(typeof(TodoTaskStatus)))
+                <label for="status" class="form-label fw-bold text-muted small">Status</label>
+                <select id="status" name="status" class="form-select form-select-sm">
+                    <option value="">All Active</option>
+                    @foreach (var stat in Enum.GetValues(typeof(TodoTaskStatus)))
                     {
-                        if (currentStatus.HasValue && currentStatus.Value.Equals(status))
-                        {
-                            <option value="@status" selected>@status</option>
-                        }
-                        else
-                        {
-                            <option value="@status">@status</option>
-                        }
+                        <option value="@stat" selected="@(currentStatus.HasValue && currentStatus.Value.Equals(stat))">@stat</option>
                     }
                 </select>
             </div>
-            <div class="col-md-3">
-                <label for="sortBy" class="form-label fw-bold">Sort By</label>
-                <select id="sortBy" name="sortBy" class="form-select">
-                    <option value="" selected="@(string.IsNullOrEmpty(currentSort))">Created Date (Default)</option>
-                    <option value="title" selected="@(currentSort == "title")">Title</option>
-                    <option value="duedate" selected="@(currentSort == "duedate")">Due Date</option>
-                </select>
-            </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Apply</button>
+                <button type="submit" class="btn btn-primary btn-sm w-100">Search</button>
             </div>
         </form>
     </div>
 </div>
 
-@if (string.IsNullOrWhiteSpace(currentAssignee))
+@if (!Model.Any())
 {
-    <div class="alert alert-info">Please enter an assignee name to view tasks.</div>
-}
-else if (!Model.Any())
-{
-    <div class="alert alert-warning">No tasks found for "@currentAssignee" with the current filters.</div>
+    <div class="alert alert-warning shadow-sm">No tasks found matching your criteria.</div>
 }
 else
 {
-    <table class="table table-hover table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>Title</th>
-                <th>Due Date</th>
-                <th>Status</th>
-                <th>Quick Status Update</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                bool isOverdue = item.DueDate.HasValue
-                && item.DueDate.Value.Date < DateTime.Today
-                && item.Status != TodoTaskStatus.Completed;
+    <div class="list-group shadow-sm">
+        @foreach (var item in Model)
+        {
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none fw-bold text-dark fs-5">@item.Title</a>
+                    <div class="mt-1">
+                        <small class="text-muted me-2">👤 @(string.IsNullOrEmpty(item.Assignee) ? "Unassigned" : item.Assignee)</small>
+                        <small class="text-muted border-start ps-2 me-2">📅 @(item.DueDate?.ToShortDateString() ?? "No date")</small>
 
-                <tr class="@(isOverdue ? "table-danger" : "")">
-                    <td class="align-middle fw-bold">
-                        @if (isOverdue)
+                        @foreach (var tag in item.Tags)
                         {
-                            <span class="badge bg-danger me-1">Overdue</span>
+                            <span class="badge bg-info text-dark" style="font-size: 0.7em;">#@tag.Name</span>
                         }
-                        @item.Title
-                    </td>
-                    <td class="align-middle">@(item.DueDate.HasValue? item.DueDate.Value.ToShortDateString() : "-")</td>
-                    <td class="align-middle">
-                        <span class="badge @(item.Status == TodoTaskStatus.Completed ? "bg-success" : (item.Status == TodoTaskStatus.InProgress ? "bg-warning text-dark" : "bg-secondary"))">
-                            @item.Status
-                        </span>
-                    </td>
-                    <td class="align-middle">
-                        <form asp-action="ChangeStatus" method="post" class="d-flex">
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <input type="hidden" name="assignee" value="@currentAssignee" />
-                            <input type="hidden" name="currentStatus" value="@currentStatus" />
-                            <input type="hidden" name="currentSort" value="@currentSort" />
+                    </div>
+                </div>
 
-                            <select name="newStatus" class="form-select form-select-sm me-2" style="width: auto;">
-                                @foreach (TodoTaskStatus status in Enum.GetValues(typeof(TodoTaskStatus)))
-                                {
-                                    <option value="@status" selected="@(item.Status == status)">@status</option>
-                                }
-                            </select>
-                            <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="badge @(item.Status == TodoTaskStatus.Completed ? "bg-success" : (item.Status == TodoTaskStatus.InProgress ? "bg-warning text-dark" : "bg-secondary"))">
+                        @item.Status
+                    </span>
+
+                    <form asp-action="ChangeStatus" method="post" class="m-0 d-flex">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <input type="hidden" name="assignee" value="@currentAssignee" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+
+                        <select name="newStatus" class="form-select form-select-sm" style="width: auto; min-width: 120px;" onchange="this.form.submit()">
+                            @foreach (TodoTaskStatus stat in Enum.GetValues(typeof(TodoTaskStatus)))
+                            {
+                                <option value="@stat" selected="@(item.Status == stat)">@stat</option>
+                            }
+                        </select>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>window.allTags = @Html.Raw(Json.Serialize(ViewBag.AllTags ?? new List<string>()));</script>
+    @{
+        await Html.RenderPartialAsync("_TagAutocomplete");
+    }
 }

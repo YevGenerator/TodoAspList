@@ -7,4 +7,6 @@ public class TodoListWebApiModel
     public string Title { get; set; } = string.Empty;
 
     public string? Description { get; set; }
+
+    public List<TodoTaskWebApiModel> Tasks { get; set; } = new List<TodoTaskWebApiModel>();
 }

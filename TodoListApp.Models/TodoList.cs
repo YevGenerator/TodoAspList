@@ -9,4 +9,6 @@ public class TodoList
     public string OwnerId { get; set; } = string.Empty;
 
     public string? Description { get; set; }
+
+    public List<TodoTask> Tasks { get; set; } = new List<TodoTask>();
 }
