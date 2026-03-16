@@ -55,6 +55,11 @@ public class TodoTagController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.View(this.Url);
+        }
+
         await this.tagService.DeleteTagAsync(id);
         return this.RedirectToAction(nameof(this.Index));
     }

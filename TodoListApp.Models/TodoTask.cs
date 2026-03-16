@@ -20,5 +20,5 @@ public class TodoTask
 
     public int TodoListId { get; set; }
 
-    public List<TodoTag> Tags { get; set; } = new List<TodoTag>();
+    public ICollection<TodoTag> Tags { get; init; } = new List<TodoTag>();
 }

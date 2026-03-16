@@ -24,9 +24,9 @@ public class TodoTaskModel
 
     public int TodoListId { get; set; }
 
-    public List<TodoTagModel> Tags { get; set; } = new List<TodoTagModel>();
+    public ICollection<TodoTagModel> Tags { get; init; } = new List<TodoTagModel>();
 
-    public List<TodoTaskCommentModel> Comments { get; set; } = new List<TodoTaskCommentModel>();
+    public ICollection<TodoTaskCommentModel> Comments { get; init; } = new List<TodoTaskCommentModel>();
 
     [Display(Name = "Tags (space-separated)")]
     public string? TagNames { get; set; }

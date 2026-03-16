@@ -10,5 +10,5 @@ public class TodoListEntity
 
     public string OwnerId { get; set; } = string.Empty;
 
-    public ICollection<TodoTaskEntity> Tasks { get; set; } = new List<TodoTaskEntity>();
+    public ICollection<TodoTaskEntity> Tasks { get; init; } = new List<TodoTaskEntity>();
 }

@@ -44,9 +44,11 @@ public class TodoTagWebApiService : ITodoTagWebApiService
 
     public async Task<TodoTag> CreateTagAsync(TodoTag tag)
     {
+        ArgumentNullException.ThrowIfNull(tag);
+
         var model = new TodoTagWebApiModel { Name = tag.Name };
         var response = await this.httpClient.PostAsJsonAsync("api/todotag", model);
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
         var created = await response.Content.ReadFromJsonAsync<TodoTagWebApiModel>();
         tag.Id = created?.Id ?? 0;
         return tag;

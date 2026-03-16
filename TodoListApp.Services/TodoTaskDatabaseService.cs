@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Data;
 using TodoListApp.Data.Entities;

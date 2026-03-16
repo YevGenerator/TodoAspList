@@ -40,7 +40,7 @@ public class AccountController : Controller
             if (result.Succeeded)
             {
                 await this.signInManager.SignInAsync(user, isPersistent: false);
-                return this.RedirectToAction("Index", "Home");
+                return this.RedirectoToIndex();
             }
 
             foreach (var error in result.Errors)
@@ -88,7 +88,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await this.signInManager.SignOutAsync();
-        return this.RedirectToAction("Index", "Home");
+        return this.RedirectoToIndex();
     }
 
     [HttpGet]
@@ -111,7 +111,7 @@ public class AccountController : Controller
         {
             var token = await this.userManager.GeneratePasswordResetTokenAsync(user);
 
-            var callbackUrl = this.Url.Action("ResetPassword", "Account", new { email = email, token = token }, protocol: this.HttpContext.Request.Scheme);
+            var callbackUrl = this.Url.Action("ResetPassword", "Account", new { email, token }, protocol: this.HttpContext.Request.Scheme);
 
             if (callbackUrl != null)
             {
@@ -128,7 +128,7 @@ public class AccountController : Controller
     {
         if (token == null || email == null)
         {
-            return this.RedirectToAction("Index", "Home");
+            return this.RedirectoToIndex();
         }
 
         var model = new RegisterModel { Email = email };
@@ -174,6 +174,11 @@ public class AccountController : Controller
             return this.Redirect(returnUrl);
         }
 
+        return this.RedirectToAction("Index", "Home");
+    }
+
+    private RedirectToActionResult RedirectoToIndex()
+    {
         return this.RedirectToAction("Index", "Home");
     }
 }

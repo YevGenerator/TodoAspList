@@ -6,5 +6,5 @@ public class TodoTagEntity
 
     public string Name { get; set; } = string.Empty;
 
-    public ICollection<TodoTaskEntity> Tasks { get; set; } = new List<TodoTaskEntity>();
+    public ICollection<TodoTaskEntity> Tasks { get; init; } = new List<TodoTaskEntity>();
 }

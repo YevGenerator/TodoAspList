@@ -38,6 +38,11 @@ public class TodoTaskCommentController : Controller
 
     public async Task<IActionResult> Edit(int id)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         var comment = await this.commentService.GetCommentByIdAsync(id);
         if (comment == null)
         {
@@ -85,6 +90,11 @@ public class TodoTaskCommentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id, int taskId)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         await this.commentService.DeleteCommentAsync(id);
         return this.RedirectToAction("Details", "TodoTask", new { id = taskId });
     }

@@ -21,7 +21,7 @@
         <div class="list-group bg-transparent">
             @foreach (var item in Model)
             {
-                <partial name="_TaskCard" model="@((item, "", User.Identity.Name ?? "", Context.Request.Path + Context.Request.QueryString, true, true))" />
+                <partial name="_TaskCard" model="@((item, "", User.Identity?.Name ?? "", Context.Request.Path + Context.Request.QueryString, true, true))" />
             }
         </div>
     }

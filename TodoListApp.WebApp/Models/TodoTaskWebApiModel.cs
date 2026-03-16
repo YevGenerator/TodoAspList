@@ -18,5 +18,5 @@ public class TodoTaskWebApiModel
 
     public int TodoListId { get; set; }
 
-    public List<TodoTagWebApiModel> Tags { get; set; } = new List<TodoTagWebApiModel>();
+    public ICollection<TodoTagWebApiModel> Tags { get; init; } = new List<TodoTagWebApiModel>();
 }

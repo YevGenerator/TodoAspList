@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Models;
@@ -27,6 +26,11 @@ public class TodoTaskController : Controller
 
     public async Task<IActionResult> Index(int todoListId)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         this.ViewBag.TodoListId = todoListId;
         var tasks = await this.taskService.GetTasksByListIdAsync(todoListId);
 
@@ -46,6 +50,11 @@ public class TodoTaskController : Controller
 
     public async Task<IActionResult> Details(int id)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         var task = await this.taskService.GetTaskByIdAsync(id);
         if (task == null)
         {
@@ -75,6 +84,11 @@ public class TodoTaskController : Controller
 
     public async Task<IActionResult> Create(int todoListId)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         var model = new TodoTaskModel { TodoListId = todoListId };
         var allTags = await this.tagService.GetAllTagsAsync();
         this.ViewBag.AllTags = allTags.Select(t => t.Name).ToList();
@@ -109,6 +123,11 @@ public class TodoTaskController : Controller
 
     public async Task<IActionResult> Edit(int id)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         var task = await this.taskService.GetTaskByIdAsync(id);
         if (task == null)
         {
@@ -167,6 +186,11 @@ public class TodoTaskController : Controller
 
     public async Task<IActionResult> Delete(int id)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         var task = await this.taskService.GetTaskByIdAsync(id);
         if (task == null)
         {
@@ -191,12 +215,22 @@ public class TodoTaskController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id, int todoListId)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         await this.taskService.DeleteTaskAsync(id);
-        return this.RedirectToAction(nameof(this.Index), new { todoListId = todoListId });
+        return this.RedirectToAction(nameof(this.Index), new { todoListId });
     }
 
     public async Task<IActionResult> Assigned(string? assignee, string? tagSearch, TodoTaskStatus? status, string? sortBy)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         if (assignee == null && tagSearch == null && status == null && sortBy == null)
         {
             assignee = this.User.Identity?.Name;
@@ -230,6 +264,11 @@ public class TodoTaskController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddTagsOnTheFly(int taskId, string? tagNames)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         await this.ProcessTagsOnTheFlyAsync(taskId, tagNames);
         return this.RedirectToAction(nameof(this.Details), new { id = taskId });
     }
@@ -239,6 +278,11 @@ public class TodoTaskController : Controller
 
     public async Task<IActionResult> ChangeStatus(int id, TodoTaskStatus newStatus, string assignee, TodoTaskStatus? currentStatus, string? currentSort, string? returnUrl = null)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         await this.taskService.ChangeTaskStatusAsync(id, newStatus);
 
         if (!string.IsNullOrEmpty(returnUrl) && this.Url.IsLocalUrl(returnUrl))
@@ -246,13 +290,18 @@ public class TodoTaskController : Controller
             return this.Redirect(returnUrl);
         }
 
-        return this.RedirectToAction(nameof(this.Assigned), new { assignee = assignee, status = currentStatus, sortBy = currentSort });
+        return this.RedirectToAction(nameof(this.Assigned), new { assignee, status = currentStatus, sortBy = currentSort });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AssignTag(int taskId, int tagId)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         await this.tagService.AssignTagToTaskAsync(taskId, tagId);
         return this.RedirectToAction(nameof(this.Details), new { id = taskId });
     }
@@ -261,6 +310,11 @@ public class TodoTaskController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoveTag(int taskId, int tagId)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         await this.tagService.RemoveTagFromTaskAsync(taskId, tagId);
         return this.RedirectToAction(nameof(this.Details), new { id = taskId });
     }

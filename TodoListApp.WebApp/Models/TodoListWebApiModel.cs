@@ -8,5 +8,5 @@ public class TodoListWebApiModel
 
     public string? Description { get; set; }
 
-    public List<TodoTaskWebApiModel> Tasks { get; set; } = new List<TodoTaskWebApiModel>();
+    public ICollection<TodoTaskWebApiModel> Tasks { get; init; } = new List<TodoTaskWebApiModel>();
 }

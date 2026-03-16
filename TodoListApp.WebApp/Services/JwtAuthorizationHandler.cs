@@ -44,8 +44,8 @@ public class JwtAuthorizationHandler : DelegatingHandler
 
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty),
-            new Claim(ClaimTypes.Name, user.Identity?.Name ?? string.Empty),
+            new (ClaimTypes.NameIdentifier, user.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty),
+            new (ClaimTypes.Name, user.Identity?.Name ?? string.Empty),
         };
 
         var token = new JwtSecurityToken(

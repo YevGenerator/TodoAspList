@@ -8,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("UsersDbConnection")));
 
+var baseUri = new Uri(builder.Configuration.GetConnectionString("WebApiBaseUri"));
+
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
@@ -32,35 +34,35 @@ builder.Services.AddTransient<JwtAuthorizationHandler>();
 builder.Services.AddTransient<IEmailService, SmtpEmailService>();
 builder.Services.AddHttpClient<ITodoListWebApiService, TodoListWebApiService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7055");
+    client.BaseAddress = baseUri;
 }).AddHttpMessageHandler<JwtAuthorizationHandler>();
 
 builder.Services.AddHttpClient<ITodoTaskWebApiService, TodoTaskWebApiService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7055");
+    client.BaseAddress = baseUri;
 }).AddHttpMessageHandler<JwtAuthorizationHandler>();
 
 builder.Services.AddHttpClient<ISearchWebApiService, SearchWebApiService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7055");
+    client.BaseAddress = baseUri;
 }).AddHttpMessageHandler<JwtAuthorizationHandler>();
 
 builder.Services.AddHttpClient<ITodoTagWebApiService, TodoTagWebApiService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7055");
+    client.BaseAddress = baseUri;
 }).AddHttpMessageHandler<JwtAuthorizationHandler>();
 
 builder.Services.AddHttpClient<ITodoTaskCommentWebApiService, TodoTaskCommentWebApiService>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7055");
+    client.BaseAddress = baseUri;
 }).AddHttpMessageHandler<JwtAuthorizationHandler>();
 
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    _ = app.UseExceptionHandler("/Home/Error");
+    _ = app.UseHsts();
 }
 
 app.UseHttpsRedirection();

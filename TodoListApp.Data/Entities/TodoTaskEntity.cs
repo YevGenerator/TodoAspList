@@ -22,7 +22,7 @@ public class TodoTaskEntity
 
     public TodoListEntity? TodoList { get; set; }
 
-    public ICollection<TodoTagEntity> Tags { get; set; } = new List<TodoTagEntity>();
+    public ICollection<TodoTagEntity> Tags { get; init; } = new List<TodoTagEntity>();
 
-    public ICollection<TodoTaskCommentEntity> Comments { get; set; } = new List<TodoTaskCommentEntity>();
+    public ICollection<TodoTaskCommentEntity> Comments { get; init; } = new List<TodoTaskCommentEntity>();
 }

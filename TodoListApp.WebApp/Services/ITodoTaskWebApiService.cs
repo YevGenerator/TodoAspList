@@ -1,6 +1,5 @@
 using TodoListApp.Models;
 using TodoListApp.Models.Enums;
-using TodoListApp.WebApp.Models;
 
 namespace TodoListApp.WebApp.Services;
 

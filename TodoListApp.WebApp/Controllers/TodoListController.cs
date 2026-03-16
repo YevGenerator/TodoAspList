@@ -65,6 +65,11 @@ public class TodoListController : Controller
 
     public async Task<IActionResult> Edit(int id)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         var list = await this.todoListService.GetTodoListByIdAsync(id);
         if (list == null)
         {
@@ -109,6 +114,11 @@ public class TodoListController : Controller
 
     public async Task<IActionResult> Delete(int id)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         var list = await this.todoListService.GetTodoListByIdAsync(id);
         if (list == null)
         {
@@ -129,6 +139,11 @@ public class TodoListController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
+        if (!this.ModelState.IsValid)
+        {
+            return this.BadRequest();
+        }
+
         await this.todoListService.DeleteTodoListAsync(id);
         return this.RedirectToAction(nameof(this.Index));
     }

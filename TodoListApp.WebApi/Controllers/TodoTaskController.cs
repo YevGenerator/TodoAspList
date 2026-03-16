@@ -135,11 +135,11 @@ public class TodoTaskController : ControllerBase
             {
                 if (term.StartsWith('+') && term.Length > 1)
                 {
-                    reqTags.Add(term.Substring(1));
+                    reqTags.Add(term[1..]);
                 }
                 else if (term.StartsWith('-') && term.Length > 1)
                 {
-                    excTags.Add(term.Substring(1));
+                    excTags.Add(term[1..]);
                 }
             }
         }
