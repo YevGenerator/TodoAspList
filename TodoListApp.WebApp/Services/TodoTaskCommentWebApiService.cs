@@ -77,7 +77,7 @@ public class TodoTaskCommentWebApiService : ITodoTaskCommentWebApiService
 
     public async Task DeleteCommentAsync(int id)
     {
-        var response = await this.httpClient.DeleteAsync($"api/todotaskcomment/{id}");
+        var response = await this.httpClient.DeleteAsync(new Uri($"api/todotaskcomment/{id}", UriKind.Relative));
         _ = response.EnsureSuccessStatusCode();
     }
 }

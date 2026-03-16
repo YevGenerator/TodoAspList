@@ -16,6 +16,7 @@ public class TodoTagController : Controller
         this.tagService = tagService;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         var tags = await this.tagService.GetAllTagsAsync();

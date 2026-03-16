@@ -16,6 +16,7 @@ public class TodoListController : Controller
         this.todoListService = todoListService;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         var lists = await this.todoListService.GetTodoListsAsync();
@@ -38,6 +39,7 @@ public class TodoListController : Controller
         return this.View(models);
     }
 
+    [HttpGet]
     public IActionResult Create()
     {
         return this.View();
@@ -63,6 +65,7 @@ public class TodoListController : Controller
         return this.View(model);
     }
 
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         if (!this.ModelState.IsValid)
@@ -112,6 +115,7 @@ public class TodoListController : Controller
         return this.View(model);
     }
 
+    [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
         if (!this.ModelState.IsValid)

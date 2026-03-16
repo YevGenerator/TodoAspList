@@ -29,17 +29,17 @@ public class TodoTagWebApiService : ITodoTagWebApiService
 
     public async Task DeleteTagAsync(int id)
     {
-        _ = await this.httpClient.DeleteAsync($"api/todotag/{id}");
+        _ = await this.httpClient.DeleteAsync(new Uri($"api/todotag/{id}", UriKind.Relative));
     }
 
     public async Task AssignTagToTaskAsync(int taskId, int tagId)
     {
-        _ = await this.httpClient.PostAsync($"api/todotag/task/{taskId}/tag/{tagId}", null);
+        _ = await this.httpClient.PostAsync(new Uri($"api/todotag/task/{taskId}/tag/{tagId}", UriKind.Relative), null);
     }
 
     public async Task RemoveTagFromTaskAsync(int taskId, int tagId)
     {
-        _ = await this.httpClient.DeleteAsync($"api/todotag/task/{taskId}/tag/{tagId}");
+        _ = await this.httpClient.DeleteAsync(new Uri($"api/todotag/task/{taskId}/tag/{tagId}", UriKind.Relative));
     }
 
     public async Task<TodoTag> CreateTagAsync(TodoTag tag)

@@ -287,3 +287,12 @@ dotnet_diagnostic.SA1615.severity = none      # ElementReturnValueMustBeDocument
 dotnet_diagnostic.SA1618.severity = none      # GenericTypeParametersMustBeDocumented
 dotnet_diagnostic.SA1625.severity = none      # ElementDocumentationMustNotBeCopiedAndPasted
 dotnet_diagnostic.SA1633.severity = none      # FileMustHaveHeader
+dotnet_diagnostic.S4144.severity = none
+
+[**/Migrations/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none
+
+[*.cshtml]
+dotnet_diagnostic.Web:S6844.severity = none
+dotnet_diagnostic.Web:S6853.severity = none

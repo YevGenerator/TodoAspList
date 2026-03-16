@@ -36,6 +36,7 @@ public class TodoTaskCommentController : Controller
         return this.RedirectToAction("Details", "TodoTask", new { id = model.TodoTaskId });
     }
 
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         if (!this.ModelState.IsValid)

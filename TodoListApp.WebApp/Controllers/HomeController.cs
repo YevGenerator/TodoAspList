@@ -7,17 +7,16 @@ namespace TodoListApp.WebApp.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> logger;
     private readonly ITodoTaskWebApiService taskService;
     private readonly ITodoListWebApiService listService;
 
-    public HomeController(ILogger<HomeController> logger, ITodoTaskWebApiService taskService, ITodoListWebApiService listService)
+    public HomeController(ITodoTaskWebApiService taskService, ITodoListWebApiService listService)
     {
-        this.logger = logger;
         this.taskService = taskService;
         this.listService = listService;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         if (this.User.Identity != null && this.User.Identity.IsAuthenticated)
@@ -56,11 +55,7 @@ public class HomeController : Controller
         return this.View();
     }
 
-    public IActionResult Privacy()
-    {
-        return this.View();
-    }
-
+    [HttpGet]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

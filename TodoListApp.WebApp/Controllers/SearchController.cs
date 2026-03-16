@@ -15,6 +15,7 @@ public class SearchController : Controller
         this.searchService = searchService;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index(string query)
     {
         if (string.IsNullOrWhiteSpace(query))

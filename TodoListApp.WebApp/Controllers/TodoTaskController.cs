@@ -24,6 +24,7 @@ public class TodoTaskController : Controller
         this.commentService = commentService;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index(int todoListId)
     {
         if (!this.ModelState.IsValid)
@@ -48,6 +49,7 @@ public class TodoTaskController : Controller
         return this.View(models);
     }
 
+    [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
         if (!this.ModelState.IsValid)
@@ -82,6 +84,7 @@ public class TodoTaskController : Controller
         return this.View(model);
     }
 
+    [HttpGet]
     public async Task<IActionResult> Create(int todoListId)
     {
         if (!this.ModelState.IsValid)
@@ -121,6 +124,7 @@ public class TodoTaskController : Controller
         return this.View(model);
     }
 
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         if (!this.ModelState.IsValid)
@@ -184,6 +188,7 @@ public class TodoTaskController : Controller
         return this.View(model);
     }
 
+    [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
         if (!this.ModelState.IsValid)
@@ -224,6 +229,7 @@ public class TodoTaskController : Controller
         return this.RedirectToAction(nameof(this.Index), new { todoListId });
     }
 
+    [HttpGet]
     public async Task<IActionResult> Assigned(string? assignee, string? tagSearch, TodoTaskStatus? status, string? sortBy)
     {
         if (!this.ModelState.IsValid)
@@ -275,7 +281,6 @@ public class TodoTaskController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-
     public async Task<IActionResult> ChangeStatus(int id, TodoTaskStatus newStatus, string assignee, TodoTaskStatus? currentStatus, string? currentSort, string? returnUrl = null)
     {
         if (!this.ModelState.IsValid)
