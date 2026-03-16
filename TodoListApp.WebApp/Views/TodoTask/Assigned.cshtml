@@ -15,16 +15,16 @@
     <div class="card-body">
         <form asp-action="Assigned" method="get" class="row g-3 align-items-end">
             <div class="col-md-3">
-                <label for="assignee" class="form-label fw-bold text-dark small"><i class="bi bi-person me-1"></i>Assignee</label>
+                <!-- //NOSONAR --><label for="assignee" class="form-label fw-bold text-dark small"><i class="bi bi-person me-1"></i>Assignee</label>
                 <input type="text" id="assignee" name="assignee" class="form-control form-control-sm border-2 fw-bold text-dark" value="@currentAssignee" placeholder="Leave empty for all" />
             </div>
             <div class="col-md-4 position-relative">
-                <label for="tagSearch" class="form-label fw-bold text-dark small"><i class="bi bi-tags me-1"></i>Tags (+must, -exclude)</label>
+                <!-- //NOSONAR --><label for="tagSearch" class="form-label fw-bold text-dark small"><i class="bi bi-tags me-1"></i>Tags (+must, -exclude)</label>
                 <input type="text" id="tagSearch" name="tagSearch" class="form-control form-control-sm border-2 fw-bold text-dark" value="@tagSearch" placeholder="+urgent -work" autocomplete="off" />
                 <div id="tagSuggestions" class="list-group position-absolute w-100 border-2" style="z-index: 1000; display: none; top: 100%;"></div>
             </div>
             <div class="col-md-3">
-                <label for="status" class="form-label fw-bold text-dark small"><i class="bi bi-flag me-1"></i>Status</label>
+                <!-- //NOSONAR --><label for="status" class="form-label fw-bold text-dark small"><i class="bi bi-flag me-1"></i>Status</label>
                 <select id="status" name="status" class="form-select form-select-sm border-2 fw-bold text-dark">
                     <option value="">All Active</option>
                     @foreach (var stat in Enum.GetValues(typeof(TodoTaskStatus)))

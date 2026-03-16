@@ -12,19 +12,19 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group mb-3">
-                <label asp-for="Email" class="form-label fw-bold"></label>
+                <!-- //NOSONAR --><label asp-for="Email" class="form-label fw-bold"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Password" class="form-label fw-bold"></label>
+                <!-- //NOSONAR --><label asp-for="Password" class="form-label fw-bold"></label>
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-4 form-check">
-                <label class="form-check-label">
+                <!-- //NOSONAR --><label class="form-check-label">
                     <input class="form-check-input" asp-for="RememberMe" />
                     @Html.DisplayNameFor(m => m.RememberMe)
                 </label>

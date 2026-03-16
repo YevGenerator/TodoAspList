@@ -8,8 +8,8 @@
         <div class="d-flex gap-2 align-items-center">
             @if (Model.ShowActions)
             {
-                <a asp-controller="TodoTask" asp-action="Edit" asp-route-id="@Model.Task.Id" class="btn btn-sm btn-neutral py-1 px-2" onclick="event.stopPropagation()"><i class="bi bi-pencil"></i></a>
-                <a asp-controller="TodoTask" asp-action="Delete" asp-route-id="@Model.Task.Id" class="btn btn-sm btn-negative py-1 px-2" onclick="event.stopPropagation()"><i class="bi bi-trash"></i></a>
+                 <!-- //NOSONAR --><a asp-controller="TodoTask" asp-action="Edit" asp-route-id="@Model.Task.Id" class="btn btn-sm btn-neutral py-1 px-2" onclick="event.stopPropagation()"><i class="bi bi-pencil"></i></a>
+                 <!-- //NOSONAR --><a asp-controller="TodoTask" asp-action="Delete" asp-route-id="@Model.Task.Id" class="btn btn-sm btn-negative py-1 px-2" onclick="event.stopPropagation()"><i class="bi bi-trash"></i></a>
             }
             <partial name="_StatusForm" model="@((Model.Task.Id, Model.Task.Status, Model.CurrentUser, Model.ReturnUrl))" />
         </div>

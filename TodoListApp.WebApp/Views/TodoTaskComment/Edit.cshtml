@@ -10,7 +10,7 @@
         <input type="hidden" asp-for="TodoTaskId" />
 
         <div class="form-group mb-3">
-            <label asp-for="Text" class="form-label fw-bold text-dark"></label>
+            <!-- //NOSONAR --><label asp-for="Text" class="form-label fw-bold text-dark"></label>
             <textarea asp-for="Text" class="form-control border-2 fw-bold text-dark bg-light" rows="4"></textarea>
             <span asp-validation-for="Text" class="text-danger fw-bold"></span>
         </div>

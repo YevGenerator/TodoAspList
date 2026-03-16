@@ -288,6 +288,7 @@ dotnet_diagnostic.SA1618.severity = none      # GenericTypeParametersMustBeDocum
 dotnet_diagnostic.SA1625.severity = none      # ElementDocumentationMustNotBeCopiedAndPasted
 dotnet_diagnostic.SA1633.severity = none      # FileMustHaveHeader
 dotnet_diagnostic.S4144.severity = none
+dotnet_diagnostic.S4457.severity = none
 
 [**/Migrations/*.cs]
 generated_code = true

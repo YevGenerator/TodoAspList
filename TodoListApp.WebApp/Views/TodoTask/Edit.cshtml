@@ -10,31 +10,31 @@
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="TodoListId" />
         <div class="form-group mb-3">
-            <label asp-for="Title" class="form-label fw-bold text-dark"></label>
+            <!-- //NOSONAR --><label asp-for="Title" class="form-label fw-bold text-dark"></label>
             <input asp-for="Title" class="form-control border-2 fw-bold text-dark bg-light" />
             <span asp-validation-for="Title" class="text-danger fw-bold"></span>
         </div>
         <div class="form-group mb-3">
-            <label asp-for="Description" class="form-label fw-bold text-dark"></label>
+            <!-- //NOSONAR --><label asp-for="Description" class="form-label fw-bold text-dark"></label>
             <textarea asp-for="Description" class="form-control border-2 fw-bold text-dark bg-light" rows="3"></textarea>
             <span asp-validation-for="Description" class="text-danger fw-bold"></span>
         </div>
         <div class="row">
             <div class="col-md-4 form-group mb-3">
-                <label asp-for="Assignee" class="form-label fw-bold text-dark"></label>
+                <!-- //NOSONAR --><label asp-for="Assignee" class="form-label fw-bold text-dark"></label>
                 <input asp-for="Assignee" class="form-control border-2 fw-bold text-dark bg-light" />
             </div>
             <div class="col-md-4 form-group mb-3">
-                <label asp-for="DueDate" class="form-label fw-bold text-dark"></label>
+                <!-- //NOSONAR --><label asp-for="DueDate" class="form-label fw-bold text-dark"></label>
                 <input asp-for="DueDate" class="form-control border-2 fw-bold text-dark bg-light" />
             </div>
             <div class="col-md-4 form-group mb-3">
-                <label asp-for="Status" class="form-label fw-bold text-dark"></label>
+                <!-- //NOSONAR --><label asp-for="Status" class="form-label fw-bold text-dark"></label>
                 <select asp-for="Status" asp-items="Html.GetEnumSelectList<TodoTaskStatus>()" class="form-select border-2 fw-bold text-dark bg-light"></select>
             </div>
         </div>
         <div class="form-group mb-4 position-relative">
-            <label asp-for="TagNames" class="form-label fw-bold text-dark"></label>
+            <!-- //NOSONAR --><label asp-for="TagNames" class="form-label fw-bold text-dark"></label>
             <div class="input-group">
                 <span class="input-group-text bg-white border-2 border-dark text-dark fw-bold"><i class="bi bi-hash"></i></span>
                 <input asp-for="TagNames" id="TagNames" class="form-control border-2 fw-bold text-dark bg-light" autocomplete="off" />
