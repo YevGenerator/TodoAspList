@@ -1,53 +1,50 @@
 @model TodoListApp.WebApp.Models.SearchResultModel
-
 @{
     ViewData["Title"] = "Search Results";
 }
 
-<h2>Search Results for "@Model.SearchQuery"</h2>
-<hr />
+<h2 class="fw-bold text-dark mb-4"><i class="bi bi-search me-2"></i>Search Results for "@Model.SearchQuery"</h2>
 
-@if (string.IsNullOrWhiteSpace(Model.SearchQuery))
-{
-    <div class="alert alert-info">Please enter a search term in the search bar above.</div>
-}
-else if (!Model.TodoLists.Any() && !Model.TodoTasks.Any())
-{
-    <div class="alert alert-warning">No results found for "@Model.SearchQuery".</div>
-}
-else
-{
-    @if (Model.TodoLists.Any())
-    {
-        <h4 class="mt-4">Matched To-Do Lists</h4>
-        <div class="list-group mb-4">
-            @foreach (var list in Model.TodoLists)
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <h4 class="fw-bold text-dark mb-3"><i class="bi bi-list-task me-2"></i>To-Do Lists</h4>
+        <div class="list-group border-2">
+            @if (!Model.TodoLists.Any())
             {
-                <a asp-controller="TodoTask" asp-action="Index" asp-route-todoListId="@list.Id" class="list-group-item list-group-item-action">
-                    <h5 class="mb-1">@list.Title</h5>
-                    <p class="mb-1 text-muted">@list.Description</p>
-                </a>
+                <div class="list-group-item text-muted fw-bold">No lists found.</div>
+            }
+            else
+            {
+                @foreach (var list in Model.TodoLists)
+                {
+                    <a asp-controller="TodoList" asp-action="Index" class="list-group-item list-group-item-action task-row fw-bold text-dark p-3">
+                        <span class="fs-5">@list.Title</span>
+                        <p class="mb-0 mt-1 text-muted">@list.Description</p>
+                    </a>
+                }
             }
         </div>
-    }
-
-    @if (Model.TodoTasks.Any())
-    {
-        <h4 class="mt-4">Matched Tasks</h4>
-        <div class="list-group">
-            @foreach (var task in Model.TodoTasks)
+    </div>
+    <div class="col-md-6 mb-4">
+        <h4 class="fw-bold text-dark mb-3"><i class="bi bi-check2-square me-2"></i>Tasks</h4>
+        <div class="list-group border-2">
+            @if (!Model.TodoTasks.Any())
             {
-                <a asp-controller="TodoTask" asp-action="Details" asp-route-id="@task.Id" class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">@task.Title</h5>
-                        <small>
-                            <span class="badge bg-secondary">@task.Status</span>
-                        </small>
+                <div class="list-group-item text-muted fw-bold">No tasks found.</div>
+            }
+            else
+            {
+                @foreach (var task in Model.TodoTasks)
+                {
+                    <div class="list-group-item task-row p-3" onclick="window.location.href='@Url.Action("Details", "TodoTask", new { id = task.Id })'">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold text-dark fs-5">@task.Title</span>
+                            <span class="badge bg-white border border-2 px-2 status-@task.Status.ToString()">@task.Status</span>
+                        </div>
+                        <small class="text-muted fw-bold"><i class="bi bi-calendar me-1"></i>@(task.DueDate?.ToShortDateString() ?? "No date")</small>
                     </div>
-                    <p class="mb-1 text-muted">@task.Description</p>
-                    <small>Assignee: @(string.IsNullOrEmpty(task.Assignee) ? "Unassigned" : task.Assignee)</small>
-                </a>
+                }
             }
         </div>
-    }
-}
+    </div>
+</div>

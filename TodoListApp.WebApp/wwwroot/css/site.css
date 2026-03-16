@@ -1,18 +1,208 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+
+.card, .accordion-item {
+    border-radius: 1.5rem !important;
+    border: none !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08) !important;
+    background-color: #ffffff;
+}
+
+.card-header, .accordion-button {
+    background-color: transparent !important;
+    border-bottom: 2px solid rgba(0,0,0,0.05) !important;
+    padding: 1.25rem 1.5rem;
+}
+
+.btn {
+    border-radius: 0 !important;
+    transition: all 0.2s ease;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-width: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    gap: 0.5rem;
+}
+
+    .btn:active {
+        transform: scale(0.92);
+    }
+
+.btn-positive {
+    background-color: #ecfdf5;
+    color: #10b981;
+    border-color: #10b981;
+}
+
+    .btn-positive:hover {
+        background-color: #10b981;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+.btn-neutral {
+    background-color: #eff6ff;
+    color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+    .btn-neutral:hover {
+        background-color: #3b82f6;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+.btn-negative {
+    background-color: #fef2f2;
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+    .btn-negative:hover {
+        background-color: #ef4444;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+.tag-pill {
+    border-radius: 50rem !important;
+    background: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
+    color: #ffffff;
+    font-weight: 700;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    box-shadow: 0 2px 8px rgba(129, 140, 248, 0.3);
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.tag-pill-lg {
+    padding: 0.6rem 1.2rem !important;
+    font-size: 1rem !important;
+}
+
+.tags-container {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+}
+
+.task-row {
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border-radius: 1rem !important;
+    margin: 0.75rem 0.5rem;
+    border: 1px solid #fbcfe8 !important;
+    background-color: #fff0f5 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+}
+
+    .task-row:hover {
+        background-color: #fce7f3 !important;
+        border-color: #f9a8d4 !important;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(236, 72, 153, 0.2) !important;
+        z-index: 10;
+    }
+
+.status-select {
+    border-radius: 0.5rem !important;
+    font-weight: 700;
+    border: 2px solid transparent;
+    background-color: #ffffff;
+    transition: all 0.2s;
+}
+
+    .status-select:hover {
+        border-color: #cbd5e1;
+    }
+
+.status-NotStarted {
+    color: #64748b;
+}
+
+.status-InProgress {
+    color: #3b82f6;
+}
+
+.status-Completed {
+    color: #10b981;
+}
+
+.frame-danger {
+    border: 2px solid #ef4444 !important;
+    background-color: #fef2f2 !important;
+}
+
+.frame-warning {
+    border: 2px solid #f59e0b !important;
+    background-color: #fffbeb !important;
+}
+
+.frame-primary {
+    border: 2px solid #3b82f6 !important;
+    background-color: #eff6ff !important;
+}
+
+.frame-danger .card-header {
+    border-bottom-color: #fca5a5 !important;
+    color: #b91c1c !important;
+}
+
+.frame-warning .card-header {
+    border-bottom-color: #fde047 !important;
+    color: #b45309 !important;
+}
+
+.frame-primary .card-header {
+    border-bottom-color: #93c5fd !important;
+    color: #1d4ed8 !important;
+}
+
+.accordion-item {
+    border: 1px solid #e2e8f0 !important;
+    margin-bottom: 1.5rem;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.08) !important;
+}
+
+.accordion-button {
+    font-size: 1.1rem;
+}
+
+.accordion-body {
+    background-color: #f8fafc !important;
+}
+
+.nav-link {
+    border-radius: 0.5rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    padding: 0.5rem 1rem !important;
+}
+
+    .nav-link:hover {
+        background-color: #f1f5f9;
+        color: #0f172a !important;
+    }
+
+.modal.fade .modal-dialog {
+    transition: transform 0.1s ease-out !important;
+}
+
+.modal.fade {
+    transition: opacity 0.1s linear !important;
+}
+
+.modal-backdrop.fade {
+    transition: opacity 0.1s linear !important;
 }

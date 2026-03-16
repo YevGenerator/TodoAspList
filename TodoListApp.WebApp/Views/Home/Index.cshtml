@@ -1,178 +1,48 @@
-@using TodoListApp.Models.Enums
+@using TodoListApp.WebApp.Models
 @{
     ViewData["Title"] = "Dashboard";
 }
 
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
-    var overdueTasks = ViewBag.OverdueTasks as List<TodoListApp.Models.TodoTask> ?? new List<TodoListApp.Models.TodoTask>();
-    var dueSoonTasks = ViewBag.DueSoonTasks as List<TodoListApp.Models.TodoTask> ?? new List<TodoListApp.Models.TodoTask>();
-    var otherTasks = ViewBag.OtherTasks as List<TodoListApp.Models.TodoTask> ?? new List<TodoListApp.Models.TodoTask>();
+    var overdueRaw = ViewBag.OverdueTasks as List<TodoListApp.Models.TodoTask> ?? new List<TodoListApp.Models.TodoTask>();
+    var dueSoonRaw = ViewBag.DueSoonTasks as List<TodoListApp.Models.TodoTask> ?? new List<TodoListApp.Models.TodoTask>();
+    var otherRaw = ViewBag.OtherTasks as List<TodoListApp.Models.TodoTask> ?? new List<TodoListApp.Models.TodoTask>();
+
+    var overdueTasks = overdueRaw.Select(t => new TodoTaskModel { Id = t.Id, Title = t.Title, DueDate = t.DueDate, Status = t.Status, Assignee = t.Assignee, TodoListId = t.TodoListId, Tags = t.Tags.Select(tg => new TodoTagModel { Id = tg.Id, Name = tg.Name }).ToList() }).ToList();
+    var dueSoonTasks = dueSoonRaw.Select(t => new TodoTaskModel { Id = t.Id, Title = t.Title, DueDate = t.DueDate, Status = t.Status, Assignee = t.Assignee, TodoListId = t.TodoListId, Tags = t.Tags.Select(tg => new TodoTagModel { Id = tg.Id, Name = tg.Name }).ToList() }).ToList();
+    var otherTasks = otherRaw.Select(t => new TodoTaskModel { Id = t.Id, Title = t.Title, DueDate = t.DueDate, Status = t.Status, Assignee = t.Assignee, TodoListId = t.TodoListId, Tags = t.Tags.Select(tg => new TodoTagModel { Id = tg.Id, Name = tg.Name }).ToList() }).ToList();
+
+    var listNames = ViewBag.ListNames as Dictionary<int, string> ?? new Dictionary<int, string>();
+    string userName = User.Identity.Name ?? "";
 
     <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
-        <h2 class="fw-bold">My Dashboard</h2>
-        <div>
-            <a asp-controller="TodoList" asp-action="Index" class="btn btn-outline-primary me-2">My Lists</a>
-            <a asp-controller="TodoTag" asp-action="Index" class="btn btn-outline-info">Manage Tags</a>
+        <h2 class="fw-bold text-dark"><i class="bi bi-grid-1x2 me-2 text-primary"></i>Dashboard</h2>
+        <div class="d-flex gap-2">
+            <a asp-controller="TodoList" asp-action="Index" class="btn btn-neutral"><i class="bi bi-list-task"></i> My Lists</a>
+            <a asp-controller="TodoTag" asp-action="Index" class="btn btn-neutral"><i class="bi bi-tags"></i> Manage Tags</a>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-6 mb-4">
-
-            @if (overdueTasks.Any())
-            {
-                <div class="card border-danger mb-4 shadow-sm">
-                    <div class="card-header bg-danger text-white fw-bold d-flex justify-content-between">
-                        <span>🚨 Overdue Tasks</span>
-                        <span class="badge bg-light text-danger">@overdueTasks.Count</span>
-                    </div>
-                    <div class="list-group list-group-flush">
-                        @foreach (var task in overdueTasks)
-                        {
-                            <div class="list-group-item list-group-item-danger">
-                                <div class="d-flex w-100 justify-content-between align-items-center">
-                                    <a asp-controller="TodoTask" asp-action="Details" asp-route-id="@task.Id" class="text-decoration-none fw-bold text-dark">
-                                        @task.Title
-                                    </a>
-                                    <div class="mt-1 mb-2">
-                                        <small class="text-muted me-2 border-end pe-2">📁 @(((Dictionary<int, string>)ViewBag.ListNames).GetValueOrDefault(task.TodoListId, "Unknown List"))</small>
-                                        @foreach (var tag in task.Tags)
-                                        {
-                                            <span class="badge bg-info text-dark" style="font-size: 0.65em;">#@tag.Name</span>
-                                        }
-                                    </div>
-                                    <small class="fw-bold">@task.DueDate?.ToShortDateString()</small>
-                                </div>
-                                <div class="mt-2 d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-secondary">@task.Status</span>
-
-                                    <form asp-controller="TodoTask" asp-action="ChangeStatus" method="post" class="d-flex m-0">
-                                        <input type="hidden" name="id" value="@task.Id" />
-                                        <input type="hidden" name="assignee" value="@User.Identity.Name" />
-                                        <input type="hidden" name="returnUrl" value="/" />
-
-                                        <select name="newStatus" class="form-select form-select-sm me-1" style="width: auto;" onchange="this.form.submit()">
-                                            <option value="">Set Status...</option>
-                                            <option value="@TodoTaskStatus.InProgress">In Progress</option>
-                                            <option value="@TodoTaskStatus.Completed">Complete</option>
-                                        </select>
-                                    </form>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-
-            <div class="card border-warning shadow-sm">
-                <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between">
-                    <span>⏳ Due Soon (Next 3 Days)</span>
-                    <span class="badge bg-light text-dark">@dueSoonTasks.Count</span>
-                </div>
-                <div class="list-group list-group-flush">
-                    @if (!dueSoonTasks.Any())
-                    {
-                        <div class="list-group-item text-muted">No urgent tasks. Chill! ☕</div>
-                    }
-                    else
-                    {
-                        @foreach (var task in dueSoonTasks)
-                        {
-                            <div class="list-group-item list-group-item-warning">
-                                <div class="d-flex w-100 justify-content-between align-items-center">
-                                    <a asp-controller="TodoTask" asp-action="Details" asp-route-id="@task.Id" class="text-decoration-none fw-bold text-dark">
-                                        @task.Title
-                                    </a>
-                                    <div class="mt-1 mb-2">
-                                        <small class="text-muted me-2 border-end pe-2">📁 @(((Dictionary<int, string>)ViewBag.ListNames).GetValueOrDefault(task.TodoListId, "Unknown List"))</small>
-                                        @foreach (var tag in task.Tags)
-                                        {
-                                            <span class="badge bg-info text-dark" style="font-size: 0.65em;">#@tag.Name</span>
-                                        }
-                                    </div>
-                                    <small class="fw-bold">@task.DueDate?.ToShortDateString()</small>
-                                </div>
-                                <div class="mt-2 d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-secondary">@task.Status</span>
-
-                                    <form asp-controller="TodoTask" asp-action="ChangeStatus" method="post" class="d-flex m-0">
-                                        <input type="hidden" name="id" value="@task.Id" />
-                                        <input type="hidden" name="assignee" value="@User.Identity.Name" />
-
-                                        <select name="newStatus" class="form-select form-select-sm me-1" style="width: auto;" onchange="this.form.submit()">
-                                            <option value="">Set Status...</option>
-                                            <option value="@TodoTaskStatus.InProgress">In Progress</option>
-                                            <option value="@TodoTaskStatus.Completed">Complete</option>
-                                        </select>
-                                    </form>
-                                </div>
-                            </div>
-                        }
-                    }
-                </div>
-            </div>
+            <partial name="_DashboardTaskList" model="@(("Overdue", "bi-exclamation-octagon", "danger", overdueTasks, listNames, userName))" />
+            <partial name="_DashboardTaskList" model="@(("Due Soon", "bi-hourglass-split", "warning", dueSoonTasks, listNames, userName))" />
         </div>
 
         <div class="col-md-6 mb-4">
-            <div class="card border-primary shadow-sm h-100">
-                <div class="card-header bg-primary text-white fw-bold d-flex justify-content-between">
-                    <span>📋 Other Active Tasks</span>
-                    <span class="badge bg-light text-primary">@otherTasks.Count</span>
-                </div>
-                <div class="list-group list-group-flush">
-                    @if (!otherTasks.Any())
-                    {
-                        <div class="list-group-item text-muted">You have no other active tasks.</div>
-                    }
-                    else
-                    {
-                        @foreach (var task in otherTasks)
-                        {
-                            <div class="list-group-item">
-                                <div class="d-flex w-100 justify-content-between align-items-center">
-                                    <a asp-controller="TodoTask" asp-action="Details" asp-route-id="@task.Id" class="text-decoration-none fw-bold text-dark">
-                                        @task.Title
-                                    </a>
-                                    <div class="mt-1 mb-2">
-                                        <small class="text-muted me-2 border-end pe-2">📁 @(((Dictionary<int, string>)ViewBag.ListNames).GetValueOrDefault(task.TodoListId, "Unknown List"))</small>
-                                        @foreach (var tag in task.Tags)
-                                        {
-                                            <span class="badge bg-info text-dark" style="font-size: 0.65em;">#@tag.Name</span>
-                                        }
-                                    </div>
-                                    <small class="text-muted">@(task.DueDate?.ToShortDateString() ?? "No date")</small>
-                                </div>
-                                <div class="mt-2 d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-secondary">@task.Status</span>
-
-                                    <form asp-controller="TodoTask" asp-action="ChangeStatus" method="post" class="d-flex m-0">
-                                        <input type="hidden" name="id" value="@task.Id" />
-                                        <input type="hidden" name="assignee" value="@User.Identity.Name" />
-
-                                        <select name="newStatus" class="form-select form-select-sm me-1" style="width: auto;" onchange="this.form.submit()">
-                                            <option value="">Set Status...</option>
-                                            <option value="@TodoTaskStatus.InProgress">In Progress</option>
-                                            <option value="@TodoTaskStatus.Completed">Complete</option>
-                                        </select>
-                                    </form>
-                                </div>
-                            </div>
-                        }
-                    }
-                </div>
-            </div>
+            <partial name="_DashboardTaskList" model="@(("Active Tasks", "bi-card-list", "primary", otherTasks, listNames, userName))" />
         </div>
     </div>
 }
 else
 {
-    <div class="text-center mt-5">
-        <h1 class="display-4 fw-bold text-primary mb-3">Welcome to To-Do App</h1>
-        <p class="lead text-muted mb-4">The ultimate tool to keep your projects on track.</p>
+    <div class="text-center mt-5 pt-5">
+        <h1 class="display-4 fw-bold text-dark mb-3"><i class="bi bi-check2-square text-primary"></i> To-Do App</h1>
+        <p class="lead text-muted mb-4 fw-bold">Airy, colorful, and highly productive.</p>
         <div class="d-flex justify-content-center gap-3">
-            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-4 shadow-sm">Get Started</a>
-            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary btn-lg px-4">Log In</a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-positive btn-lg"><i class="bi bi-person-plus"></i> Get Started</a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-neutral btn-lg"><i class="bi bi-box-arrow-in-right"></i> Log In</a>
         </div>
     </div>
 }

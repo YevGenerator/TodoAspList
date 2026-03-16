@@ -1,39 +1,29 @@
 @model TodoListApp.WebApp.Models.TodoListModel
-
 @{
-    ViewData["Title"] = "Edit To-Do List";
+    ViewData["Title"] = "Edit List";
 }
 
-<h2>Edit To-Do List</h2>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-
-            <div class="form-group mb-3">
-                <label asp-for="Title" class="form-label fw-bold"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-4">
-                <label asp-for="Description" class="form-label fw-bold"></label>
-                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <button type="submit" class="btn btn-success me-2">Save</button>
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-            </div>
-        </form>
-    </div>
+<h2 class="fw-bold text-dark mb-4"><i class="bi bi-pencil text-primary me-2"></i>Edit List</h2>
+<div class="card border-0 shadow-sm p-4 col-md-8">
+    <form asp-action="Edit">
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group mb-3">
+            <label asp-for="Title" class="form-label fw-bold text-dark"></label>
+            <input asp-for="Title" class="form-control border-2 fw-bold text-dark bg-light" />
+            <span asp-validation-for="Title" class="text-danger fw-bold"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Description" class="form-label fw-bold text-dark"></label>
+            <textarea asp-for="Description" class="form-control border-2 fw-bold text-dark bg-light" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger fw-bold"></span>
+        </div>
+        <partial name="_FormActions" model="@(("Save Changes", "bi-save", "btn-positive", Url.Action("Index")))" />
+    </form>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
 }

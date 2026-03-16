@@ -1,32 +1,31 @@
 @model IEnumerable<TodoListApp.WebApp.Models.TodoTaskModel>
 @using TodoListApp.Models.Enums
-
 @{
-    ViewData["Title"] = "Task Filter";
+    ViewData["Title"] = "Task Explorer";
     string currentAssignee = ViewBag.Assignee as string ?? "";
     string tagSearch = ViewBag.TagSearch as string ?? "";
     TodoTaskStatus? currentStatus = ViewBag.CurrentStatus as TodoTaskStatus?;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Task Explorer</h2>
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold text-dark"><i class="bi bi-search me-2 text-primary"></i>Task Explorer</h2>
 </div>
 
-<div class="card mb-4 shadow-sm border-0 bg-light">
+<div class="card mb-4">
     <div class="card-body">
         <form asp-action="Assigned" method="get" class="row g-3 align-items-end">
             <div class="col-md-3">
-                <label for="assignee" class="form-label fw-bold text-muted small">Assignee (leave empty for all)</label>
-                <input type="text" id="assignee" name="assignee" class="form-control form-control-sm" value="@currentAssignee" placeholder="e.g. user@mail.com" />
+                <label for="assignee" class="form-label fw-bold text-dark small"><i class="bi bi-person me-1"></i>Assignee</label>
+                <input type="text" id="assignee" name="assignee" class="form-control form-control-sm border-2 fw-bold text-dark" value="@currentAssignee" placeholder="Leave empty for all" />
             </div>
             <div class="col-md-4 position-relative">
-                <label for="tagSearch" class="form-label fw-bold text-muted small">Tags (+must, -exclude)</label>
-                <input type="text" id="tagSearch" name="tagSearch" class="form-control form-control-sm" value="@tagSearch" placeholder="e.g. +urgent -work bug" autocomplete="off" />
-                <div id="tagSuggestions" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display: none; top: 100%;"></div>
+                <label for="tagSearch" class="form-label fw-bold text-dark small"><i class="bi bi-tags me-1"></i>Tags (+must, -exclude)</label>
+                <input type="text" id="tagSearch" name="tagSearch" class="form-control form-control-sm border-2 fw-bold text-dark" value="@tagSearch" placeholder="+urgent -work" autocomplete="off" />
+                <div id="tagSuggestions" class="list-group position-absolute w-100 border-2" style="z-index: 1000; display: none; top: 100%;"></div>
             </div>
             <div class="col-md-3">
-                <label for="status" class="form-label fw-bold text-muted small">Status</label>
-                <select id="status" name="status" class="form-select form-select-sm">
+                <label for="status" class="form-label fw-bold text-dark small"><i class="bi bi-flag me-1"></i>Status</label>
+                <select id="status" name="status" class="form-select form-select-sm border-2 fw-bold text-dark">
                     <option value="">All Active</option>
                     @foreach (var stat in Enum.GetValues(typeof(TodoTaskStatus)))
                     {
@@ -35,57 +34,25 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary btn-sm w-100">Search</button>
+                <button type="submit" class="btn btn-neutral btn-sm w-100"><i class="bi bi-filter"></i> Filter</button>
             </div>
         </form>
     </div>
 </div>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-warning shadow-sm">No tasks found matching your criteria.</div>
-}
-else
-{
-    <div class="list-group shadow-sm">
+<div class="list-group bg-transparent">
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning border-2 fw-bold"><i class="bi bi-emoji-frown me-2"></i>No tasks found matching your criteria.</div>
+    }
+    else
+    {
         @foreach (var item in Model)
         {
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none fw-bold text-dark fs-5">@item.Title</a>
-                    <div class="mt-1">
-                        <small class="text-muted me-2">👤 @(string.IsNullOrEmpty(item.Assignee) ? "Unassigned" : item.Assignee)</small>
-                        <small class="text-muted border-start ps-2 me-2">📅 @(item.DueDate?.ToShortDateString() ?? "No date")</small>
-
-                        @foreach (var tag in item.Tags)
-                        {
-                            <span class="badge bg-info text-dark" style="font-size: 0.7em;">#@tag.Name</span>
-                        }
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center gap-3">
-                    <span class="badge @(item.Status == TodoTaskStatus.Completed ? "bg-success" : (item.Status == TodoTaskStatus.InProgress ? "bg-warning text-dark" : "bg-secondary"))">
-                        @item.Status
-                    </span>
-
-                    <form asp-action="ChangeStatus" method="post" class="m-0 d-flex">
-                        <input type="hidden" name="id" value="@item.Id" />
-                        <input type="hidden" name="assignee" value="@currentAssignee" />
-                        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
-
-                        <select name="newStatus" class="form-select form-select-sm" style="width: auto; min-width: 120px;" onchange="this.form.submit()">
-                            @foreach (TodoTaskStatus stat in Enum.GetValues(typeof(TodoTaskStatus)))
-                            {
-                                <option value="@stat" selected="@(item.Status == stat)">@stat</option>
-                            }
-                        </select>
-                    </form>
-                </div>
-            </div>
+            <partial name="_TaskCard" model="@((item, "", currentAssignee, Context.Request.Path + Context.Request.QueryString, true, false))" />
         }
-    </div>
-}
+    }
+</div>
 
 @section Scripts {
     <script>window.allTags = @Html.Raw(Json.Serialize(ViewBag.AllTags ?? new List<string>()));</script>

@@ -1,34 +1,27 @@
 @model TodoListApp.WebApp.Models.TodoTaskCommentModel
-
 @{
     ViewData["Title"] = "Edit Comment";
 }
 
-<h2>Edit Comment</h2>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="TodoTaskId" />
+<h2 class="fw-bold text-dark mb-4"><i class="bi bi-pencil text-primary me-2"></i>Edit Comment</h2>
+<div class="card border-0 shadow-sm p-4 col-md-8">
+    <form asp-action="Edit">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="TodoTaskId" />
 
-            <div class="form-group mb-3">
-                <label asp-for="Text" class="form-label fw-bold"></label>
-                <textarea asp-for="Text" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Text" class="text-danger"></span>
-            </div>
+        <div class="form-group mb-3">
+            <label asp-for="Text" class="form-label fw-bold text-dark"></label>
+            <textarea asp-for="Text" class="form-control border-2 fw-bold text-dark bg-light" rows="4"></textarea>
+            <span asp-validation-for="Text" class="text-danger fw-bold"></span>
+        </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn btn-success me-2">Save</button>
-                <a asp-controller="TodoTask" asp-action="Details" asp-route-id="@Model.TodoTaskId" class="btn btn-secondary">Cancel</a>
-            </div>
-        </form>
-    </div>
+        <partial name="_FormActions" model="@(("Save Comment", "bi-save", "btn-positive", Url.Action("Details", "TodoTask", new { id = Model.TodoTaskId })))" />
+    </form>
 </div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
 }

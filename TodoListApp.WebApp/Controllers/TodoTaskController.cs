@@ -124,7 +124,7 @@ public class TodoTaskController : Controller
             Status = task.Status,
             Assignee = task.Assignee,
             TodoListId = task.TodoListId,
-            TagNames = string.Join(", ", task.Tags.Select(t => t.Name)),
+            TagNames = string.Join(" ", task.Tags.Select(t => t.Name)),
         };
 
         var allTags = await this.tagService.GetAllTagsAsync();

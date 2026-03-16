@@ -1,0 +1,22 @@
+@model (string Title, string EntityName, string WarningText, string DeleteAction, string DeleteIdName, int DeleteId, string CancelUrl)
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card frame-danger">
+            <div class="card-body p-5 text-center bg-transparent">
+                <i class="bi bi-exclamation-triangle text-danger mb-3 d-block" style="font-size: 4rem;"></i>
+                <h2 class="fw-bold text-dark mb-4">Delete @Model.EntityName?</h2>
+                <div class="p-3 bg-white border border-danger border-2 rounded-3 mb-4 shadow-sm">
+                    <h4 class="fw-bold text-dark mb-0">@Model.Title</h4>
+                </div>
+                <p class="text-danger fw-bold fs-5 mb-5">@Model.WarningText</p>
+
+                <form asp-action="@Model.DeleteAction" method="post" class="d-flex justify-content-center gap-3">
+                    <input type="hidden" name="@Model.DeleteIdName" value="@Model.DeleteId" />
+                    <button type="submit" class="btn btn-negative btn-lg px-4"><i class="bi bi-trash"></i> Yes, Delete</button>
+                    <a href="@Model.CancelUrl" class="btn btn-neutral btn-lg px-4"><i class="bi bi-arrow-left"></i> No, Keep It</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

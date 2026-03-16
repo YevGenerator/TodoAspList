@@ -1,72 +1,45 @@
-@model TodoListApp.WebApp.Models.TodoTagModel
-
+@model IEnumerable<TodoListApp.WebApp.Models.TodoTagModel>
 @{
     ViewData["Title"] = "Manage Tags";
-    var tags = ViewBag.Tags as IEnumerable<TodoListApp.WebApp.Models.TodoTagModel> ?? Enumerable.Empty<TodoListApp.WebApp.Models.TodoTagModel>();
 }
 
-<h2>Manage Tags</h2>
-<hr />
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="fw-bold text-dark"><i class="bi bi-tags me-2 text-primary"></i>Manage Tags</h2>
+</div>
 
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Create New Tag</h5>
+<div class="card mb-4 border-2 frame-primary">
+    <div class="card-body p-4">
+        <h5 class="fw-bold text-dark mb-3">Create New Tag</h5>
+        <form asp-action="Create" method="post" class="d-flex gap-2 align-items-center" style="max-width: 400px;">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-2 border-primary text-primary fw-bold"><i class="bi bi-hash"></i></span>
+                <input type="text" name="Name" class="form-control border-2 border-primary fw-bold text-dark bg-white" placeholder="e.g. urgent, backend" required autocomplete="off" />
             </div>
-            <div class="card-body">
-                <form asp-action="Create" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="form-group mb-3">
-                        <label asp-for="Name" class="form-label fw-bold"></label>
-                        <input asp-for="Name" class="form-control" placeholder="e.g. Urgent, Work, Home" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Add Tag</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-8">
-        <table class="table table-hover table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>Tag Name</th>
-                    <th class="text-end" style="width: 100px;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (!tags.Any())
-                {
-                    <tr>
-                        <td colspan="2" class="text-center">No tags created yet.</td>
-                    </tr>
-                }
-                else
-                {
-                    @foreach (var tag in tags)
-                    {
-                        <tr>
-                            <td class="align-middle">
-                                <span class="badge bg-info text-dark">@tag.Name</span>
-                            </td>
-                            <td class="text-end">
-                                <form asp-action="Delete" method="post" onsubmit="return confirm('Are you sure you want to delete this tag?');">
-                                    <input type="hidden" name="id" value="@tag.Id" />
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
+            <button type="submit" class="btn btn-positive"><i class="bi bi-plus-lg"></i> Add</button>
+        </form>
     </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<div class="card border-0 shadow-sm p-4">
+    <h5 class="fw-bold text-dark mb-4"><i class="bi bi-collection me-2"></i>All Tags</h5>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning border-2 fw-bold"><i class="bi bi-info-circle me-2"></i>No tags found. Create your first one above!</div>
     }
-}
+    else
+    {
+        <div class="d-flex flex-wrap gap-2">
+            @foreach (var tag in Model.OrderBy(t => t.Name))
+            {
+                <div class="tag-pill tag-pill-lg d-flex align-items-center shadow-sm">
+                    <i class="bi bi-hash me-1 opacity-75"></i>@tag.Name
+
+                    <button type="button" class="btn-close btn-close-white ms-3" style="font-size: 0.65rem;" data-bs-toggle="modal" data-bs-target="#deleteTagModal-@tag.Id" aria-label="Remove"></button>
+
+                    <partial name="_DeleteModal" model="@(($"deleteTagModal-{tag.Id}", tag.Name, "Tag", "Are you sure you want to delete this tag? It will be removed from all associated tasks!", Url.Action("Delete", "TodoTag"), "id", tag.Id, "", ""))" />
+                </div>
+            }
+        </div>
+    }
+</div>

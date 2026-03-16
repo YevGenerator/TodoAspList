@@ -1,27 +1,8 @@
 @model TodoListApp.WebApp.Models.TodoListModel
-
 @{
-    ViewData["Title"] = "Delete To-Do List";
+    ViewData["Title"] = "Delete List";
 }
 
-<div class="alert alert-danger" role="alert">
-    <h4 class="alert-heading">Are you sure you want to delete this list?</h4>
-    <p>This action cannot be undone. All tasks inside this list will also be deleted.</p>
-</div>
-
-<div>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-3">Title</dt>
-        <dd class="col-sm-9 fw-bold">@Model.Title</dd>
-
-        <dt class="col-sm-3">Description</dt>
-        <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Description) ? "No description" : Model.Description)</dd>
-    </dl>
-
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <button type="submit" class="btn btn-danger me-2">Yes, Delete</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-    </form>
-</div>
+<partial name="_DeleteCard" model="@((Model.Title, "To-Do List",
+"Are you sure you want to delete this list? All tasks inside will be permanently lost!",
+"Delete", "id", Model.Id, Url.Action("Index")))" />

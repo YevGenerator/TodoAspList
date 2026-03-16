@@ -1,0 +1,27 @@
+@model (string ModalId, string Title, string EntityName, string WarningText, string PostUrl, string DeleteIdName, int DeleteId, string ExtraParamName, string ExtraParamValue)
+
+<div class="modal fade" id="@Model.ModalId" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 frame-danger shadow-lg" style="border-radius: 1.5rem; overflow: hidden;">
+            <div class="modal-body p-5 text-center bg-transparent">
+                <i class="bi bi-exclamation-triangle text-danger mb-3 d-block" style="font-size: 3.5rem;"></i>
+                <h3 class="fw-bold text-dark mb-4">Delete @Model.EntityName?</h3>
+                <div class="p-3 bg-white border border-danger border-2 rounded-3 mb-4 shadow-sm text-truncate">
+                    <h5 class="fw-bold text-dark mb-0">@Model.Title</h5>
+                </div>
+                <p class="text-danger fw-bold mb-5">@Model.WarningText</p>
+
+                <form action="@Model.PostUrl" method="post" class="d-flex justify-content-center gap-2 flex-wrap">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="@Model.DeleteIdName" value="@Model.DeleteId" />
+                    @if (!string.IsNullOrEmpty(Model.ExtraParamName))
+                    {
+                        <input type="hidden" name="@Model.ExtraParamName" value="@Model.ExtraParamValue" />
+                    }
+                    <button type="submit" class="btn btn-negative px-4"><i class="bi bi-trash"></i> Yes, Delete</button>
+                    <button type="button" class="btn btn-neutral px-4" data-bs-dismiss="modal"><i class="bi bi-arrow-left"></i> No, Keep It</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -364,3 +364,5 @@ FodyWeavers.xsd
 /TodoListApp.WebApi/todolist.db-shm
 /TodoListApp.WebApi/todolist.db
 /TodoListApp.WebApp/users.db
+/TodoListApp.WebApp/users.db-shm
+/TodoListApp.WebApp/users.db-wal

@@ -1,65 +1,54 @@
 @model TodoListApp.WebApp.Models.TodoTaskModel
-
 @{
     ViewData["Title"] = "Task Details";
-    var availableTags = ViewBag.AvailableTags as List<TodoListApp.WebApp.Models.TodoTagModel> ?? new List<TodoListApp.WebApp.Models.TodoTagModel>();
 }
 
-<h2>Task Details</h2>
-<hr />
-<div class="row">
-    <div class="col-md-8">
-        <dl class="row">
-            <dt class="col-sm-3">Title</dt>
-            <dd class="col-sm-9 fw-bold">@Model.Title</dd>
+<h2 class="fw-bold text-dark mb-4"><i class="bi bi-card-checklist me-2 text-primary"></i>Task Details</h2>
 
-            <dt class="col-sm-3">Description</dt>
-            <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Description) ? "No description" : Model.Description)</dd>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+        <dl class="row mb-0">
+            <dt class="col-sm-3 text-dark fw-bold">Title</dt>
+            <dd class="col-sm-9 fw-bold fs-5 text-dark">@Model.Title</dd>
 
-            <dt class="col-sm-3">Status</dt>
+            <dt class="col-sm-3 text-dark fw-bold">Description</dt>
+            <dd class="col-sm-9 text-dark fw-bold">@(string.IsNullOrEmpty(Model.Description) ? "No description" : Model.Description)</dd>
+
+            <dt class="col-sm-3 text-dark fw-bold">Status</dt>
             <dd class="col-sm-9">
-                <span class="badge @(Model.Status == TodoListApp.Models.Enums.TodoTaskStatus.Completed ? "bg-success" : "bg-secondary")">
-                    @Model.Status
-                </span>
+                <span class="badge bg-white border border-2 px-3 py-2 status-@Model.Status.ToString()">@Model.Status</span>
             </dd>
 
-            <dt class="col-sm-3">Due Date</dt>
-            <dd class="col-sm-9">@(Model.DueDate.HasValue? Model.DueDate.Value.ToShortDateString() : "Not set")</dd>
+            <dt class="col-sm-3 text-dark fw-bold">Due Date</dt>
+            <dd class="col-sm-9 text-dark fw-bold"><i class="bi bi-calendar me-1"></i>@(Model.DueDate.HasValue? Model.DueDate.Value.ToShortDateString() : "Not set")</dd>
 
-            <dt class="col-sm-3">Assignee</dt>
-            <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Assignee) ? "Unassigned" : Model.Assignee)</dd>
+            <dt class="col-sm-3 text-dark fw-bold">Assignee</dt>
+            <dd class="col-sm-9 text-dark fw-bold"><i class="bi bi-person me-1"></i>@(string.IsNullOrEmpty(Model.Assignee) ? "Unassigned" : Model.Assignee)</dd>
 
-            <dt class="col-sm-3 mt-3">Tags</dt>
+            <dt class="col-sm-3 mt-3 text-dark fw-bold">Tags</dt>
             <dd class="col-sm-9 mt-3">
-                @if (!Model.Tags.Any())
-                {
-                    <span class="text-muted">No tags assigned.</span>
-                }
-                else
-                {
-                    <div class="d-flex flex-wrap gap-2">
-                        @foreach (var tag in Model.Tags)
-                        {
-                            <span class="badge bg-info text-dark d-flex align-items-center">
-                                @tag.Name
-                                <form asp-action="RemoveTag" method="post" class="ms-2 mb-0">
-                                    <input type="hidden" name="taskId" value="@Model.Id" />
-                                    <input type="hidden" name="tagId" value="@tag.Id" />
-                                    <button type="submit" class="btn-close btn-close-white" style="font-size: 0.5rem;" aria-label="Remove"></button>
-                                </form>
-                            </span>
-                        }
-                    </div>
-                }
-
-                <form asp-action="AddTagsOnTheFly" method="post" class="mt-3">
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <span class="tag-pill d-flex align-items-center py-2 px-3">
+                            <i class="bi bi-hash"></i>@tag.Name
+                            <form asp-action="RemoveTag" method="post" class="ms-2 m-0 d-inline">
+                                <input type="hidden" name="taskId" value="@Model.Id" />
+                                <input type="hidden" name="tagId" value="@tag.Id" />
+                                <button type="submit" class="btn-close btn-close-white ms-1" style="font-size: 0.5rem;" aria-label="Remove"></button>
+                            </form>
+                        </span>
+                    }
+                </div>
+                <form asp-action="AddTagsOnTheFly" method="post" class="mt-2">
                     <input type="hidden" name="taskId" value="@Model.Id" />
                     <div class="position-relative" style="max-width: 300px;">
-                        <div class="input-group input-group-sm">
-                            <input type="text" id="TagNames" name="tagNames" class="form-control" autocomplete="off" placeholder="Add tags..." />
-                            <button type="submit" class="btn btn-outline-primary">Add</button>
+                        <div class="input-group input-group-sm shadow-sm" style="border-radius: 0.5rem; overflow: visible;">
+                            <span class="input-group-text bg-white border-2 border-primary text-primary fw-bold"><i class="bi bi-hash"></i></span>
+                            <input type="text" id="TagNames" name="tagNames" class="form-control border-2 border-primary fw-bold text-dark bg-white" autocomplete="off" placeholder="Add tags..." />
+                            <button type="submit" class="btn btn-positive border-2"><i class="bi bi-plus-lg"></i> Add</button>
                         </div>
-                        <div id="tagSuggestions" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display: none;"></div>
+                        <div id="tagSuggestions" class="list-group position-absolute w-100 border-2" style="z-index: 1000; display: none; top: 100%;"></div>
                     </div>
                 </form>
             </dd>
@@ -67,58 +56,45 @@
     </div>
 </div>
 
-<div class="mt-4">
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">Edit Task</a>
-    <a asp-action="Index" asp-route-todoListId="@Model.TodoListId" class="btn btn-secondary">Back to Tasks</a>
+<div class="mb-5 d-flex gap-2">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-neutral px-4"><i class="bi bi-pencil"></i> Edit Task</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-negative px-4"><i class="bi bi-trash"></i> Delete Task</a>
+    <a asp-controller="TodoTask" asp-action="Index" asp-route-todoListId="@Model.TodoListId" class="btn btn-neutral px-4"><i class="bi bi-arrow-left"></i> Back to List</a>
 </div>
 
-<hr class="mt-5" />
-<div class="row">
-    <div class="col-md-8">
-        <h4>Comments</h4>
+<h4 class="fw-bold text-dark mb-3"><i class="bi bi-chat-left-text text-primary me-2"></i>Comments</h4>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body bg-white p-4">
+        <form asp-controller="TodoTaskComment" asp-action="Create" method="post">
+            <input type="hidden" name="TodoTaskId" value="@Model.Id" />
+            <div class="form-group mb-3">
+                <textarea name="Text" class="form-control border-2 fw-bold text-dark bg-light" rows="3" placeholder="Write a comment..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-positive"><i class="bi bi-send"></i> Post Comment</button>
+        </form>
+    </div>
+</div>
 
-        <div class="card mb-4">
-            <div class="card-body">
-                <form asp-controller="TodoTaskComment" asp-action="Create" method="post">
-                    <input type="hidden" name="TodoTaskId" value="@Model.Id" />
-                    <div class="form-group mb-2">
-                        <textarea name="Text" class="form-control" rows="2" placeholder="Write a comment..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-sm btn-primary">Post Comment</button>
-                </form>
+<div class="list-group border-0 bg-transparent gap-2">
+    @foreach (var comment in Model.Comments)
+    {
+        <div class="list-group-item p-4 border-0 rounded-3 shadow-sm bg-white">
+            <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-person-circle text-primary me-2 fs-5"></i>@comment.CreatedBy</h6>
+                <small class="text-muted fw-bold bg-light px-2 py-1 rounded-2">@comment.CreatedAt.ToLocalTime().ToString("g")</small>
+            </div>
+            <p class="mb-3 mt-3 text-dark fw-bold fs-6">@comment.Text</p>
+            <div class="text-end border-top pt-3">
+                <a asp-controller="TodoTaskComment" asp-action="Edit" asp-route-id="@comment.Id" class="btn btn-sm btn-neutral py-1 px-3"><i class="bi bi-pencil"></i> Edit</a>
+
+                <button type="button" class="btn btn-sm btn-negative py-1 px-3 ms-1" data-bs-toggle="modal" data-bs-target="#deleteCommentModal-@comment.Id">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+
+                <partial name="_DeleteModal" model="@(($"deleteCommentModal-{comment.Id}", comment.Text.Length > 30 ? comment.Text.Substring(0, 30) + "..." : comment.Text, "Comment", "Are you sure you want to delete this comment? This action cannot be undone.", Url.Action("Delete", "TodoTaskComment"), "id", comment.Id, "taskId", Model.Id.ToString()))" />
             </div>
         </div>
-
-        @if (!Model.Comments.Any())
-        {
-            <p class="text-muted">No comments yet.</p>
-        }
-        else
-        {
-            <div class="list-group">
-                @foreach (var comment in Model.Comments)
-                {
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1 fw-bold">@comment.CreatedBy</h6>
-                            <small class="text-muted">@comment.CreatedAt.ToLocalTime().ToString("g")</small>
-                        </div>
-                        <p class="mb-1 mt-2">@comment.Text</p>
-
-                        <div class="mt-2 text-end">
-                            <form asp-controller="TodoTaskComment" asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Delete this comment?');">
-                                <input type="hidden" name="id" value="@comment.Id" />
-                                <input type="hidden" name="taskId" value="@Model.Id" />
-                                <button type="submit" class="btn btn-sm btn-link text-danger p-0 border-0">Delete</button>
-                            </form>
-                            <span class="text-muted mx-1">|</span>
-                            <a asp-controller="TodoTaskComment" asp-action="Edit" asp-route-id="@comment.Id" class="btn btn-sm btn-link text-warning p-0 border-0">Edit</a>
-                        </div>
-                    </div>
-                }
-            </div>
-        }
-    </div>
+    }
 </div>
 
 @section Scripts {

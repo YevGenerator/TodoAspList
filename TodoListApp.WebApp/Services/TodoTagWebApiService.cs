@@ -48,7 +48,7 @@ public class TodoTagWebApiService : ITodoTagWebApiService
         var response = await this.httpClient.PostAsJsonAsync("api/todotag", model);
         response.EnsureSuccessStatusCode();
         var created = await response.Content.ReadFromJsonAsync<TodoTagWebApiModel>();
-        tag.Id = created?.Id ?? 0; // Отримуємо ID нового тегу
+        tag.Id = created?.Id ?? 0;
         return tag;
     }
 }

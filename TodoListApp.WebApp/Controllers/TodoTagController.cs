@@ -23,10 +23,9 @@ public class TodoTagController : Controller
         {
             Id = t.Id,
             Name = t.Name,
-        });
+        }).ToList();
 
-        this.ViewBag.Tags = models;
-        return this.View(new TodoTagModel());
+        return this.View(models);
     }
 
     [HttpPost]
@@ -38,13 +37,18 @@ public class TodoTagController : Controller
         if (this.ModelState.IsValid)
         {
             var tag = new TodoTag { Name = model.Name };
-            await this.tagService.CreateTagAsync(tag);
+            _ = await this.tagService.CreateTagAsync(tag);
             return this.RedirectToAction(nameof(this.Index));
         }
 
         var tags = await this.tagService.GetAllTagsAsync();
-        this.ViewBag.Tags = tags.Select(t => new TodoTagModel { Id = t.Id, Name = t.Name });
-        return this.View("Index", model);
+        var models = tags.Select(t => new TodoTagModel
+        {
+            Id = t.Id,
+            Name = t.Name,
+        }).ToList();
+
+        return this.View("Index", models);
     }
 
     [HttpPost]
