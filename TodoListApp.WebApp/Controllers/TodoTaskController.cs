@@ -281,7 +281,7 @@ public class TodoTaskController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ChangeStatus(int id, TodoTaskStatus newStatus, string assignee, TodoTaskStatus? currentStatus, string? currentSort, string? returnUrl = null)
+    public async Task<IActionResult> ChangeStatus(int id, TodoTaskStatus newStatus, string assignee, TodoTaskStatus? currentStatus, string? currentSort, string? returnUr = null)
     {
         if (!this.ModelState.IsValid)
         {
@@ -290,9 +290,9 @@ public class TodoTaskController : Controller
 
         await this.taskService.ChangeTaskStatusAsync(id, newStatus);
 
-        if (!string.IsNullOrEmpty(returnUrl) && this.Url.IsLocalUrl(returnUrl))
+        if (!string.IsNullOrEmpty(returnUr) && this.Url.IsLocalUrl(returnUr))
         {
-            return this.Redirect(returnUrl);
+            return this.Redirect(returnUr);
         }
 
         return this.RedirectToAction(nameof(this.Assigned), new { assignee, status = currentStatus, sortBy = currentSort });
